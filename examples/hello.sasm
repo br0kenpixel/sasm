@@ -1,5 +1,3 @@
 VAR x
 MOV x,"Hello, World!"
 DMP x
-
-INC 1
