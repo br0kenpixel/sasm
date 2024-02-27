@@ -1,0 +1,8 @@
+[package]
+name = "sasm-interpreter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sasm-parse = { path = "../sasm-parse" }
+thiserror = "1.0.57"
