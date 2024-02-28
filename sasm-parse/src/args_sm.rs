@@ -1,7 +1,6 @@
-use std::str::Chars;
-
 use crate::{error::ParseError, expression::Expression};
 use itertools::Itertools;
+use std::str::Chars;
 
 pub struct ArgParserStateMachine;
 

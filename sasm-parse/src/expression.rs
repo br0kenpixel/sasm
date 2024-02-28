@@ -1,6 +1,5 @@
-use std::mem;
-
 use crate::{error::ParseError, ident::Identifier};
+use std::mem;
 
 pub type Number = i64;
 pub type Text = String;
