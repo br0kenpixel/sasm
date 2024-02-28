@@ -30,6 +30,14 @@ impl VariableStorage {
         Ok(Some(inner))
     }
 
+    pub fn get_nonnull(&self, ident: &Identifier) -> Result<&Expression, RuntimeError> {
+        let Some(value) = self.get(ident)? else {
+            return Err(RuntimeError::NullDeref);
+        };
+
+        Ok(value)
+    }
+
     pub fn set(&mut self, ident: &Identifier, value: Expression) -> Result<(), RuntimeError> {
         if self.get(ident).is_ok() {
             self.replace(ident, value)

@@ -19,33 +19,35 @@ pub fn execute(
             vars.create(ident)?;
         }
         Instruction::Move(dst, src) => {
-            let value = match src {
-                Expression::Identifier(ident) => {
-                    let value = vars.get(ident)?;
-
-                    if value.is_none() {
-                        return Err(RuntimeError::NullDeref);
-                    }
-
-                    value.cloned().unwrap()
-                }
-                other => other.clone(),
-            };
-
+            let value = pass_or_fetch(vars, src)?.clone();
             vars.set(dst, value)?;
         }
         Instruction::Increment(ident) => single_step(ident, vars, 1)?,
         Instruction::Decrement(ident) => single_step(ident, vars, -1)?,
-        Instruction::Dump(expr) => {
-            if let Expression::Identifier(ident) = expr {
-                var_dump(vars.get(ident)?);
-            } else {
-                var_dump(Some(expr));
-            }
-        }
+        Instruction::Dump(expr) => var_dump(pass_or_fetch_nullable(vars, expr)?),
     }
 
     Ok(ExecutorState::Ok)
+}
+
+pub fn pass_or_fetch<'a>(
+    vars: &'a mut VariableStorage,
+    expr: &'a Expression,
+) -> Result<&'a Expression, RuntimeError> {
+    match expr {
+        Expression::Identifier(ident) => vars.get_nonnull(ident),
+        other => Ok(other),
+    }
+}
+
+pub fn pass_or_fetch_nullable<'a>(
+    vars: &'a mut VariableStorage,
+    expr: &'a Expression,
+) -> Result<Option<&'a Expression>, RuntimeError> {
+    match expr {
+        Expression::Identifier(ident) => vars.get(ident),
+        other => Ok(Some(other)),
+    }
 }
 
 fn single_step(
@@ -53,13 +55,9 @@ fn single_step(
     vars: &mut VariableStorage,
     step: Number,
 ) -> Result<(), RuntimeError> {
-    let value_ref = vars.get(ident)?;
+    let value_ref = vars.get_nonnull(ident)?;
 
-    if value_ref.is_none() {
-        return Err(RuntimeError::NullDeref);
-    }
-
-    let Expression::Number(current) = value_ref.unwrap() else {
+    let Expression::Number(current) = value_ref else {
         return Err(RuntimeError::IllegalIncrement);
     };
 
