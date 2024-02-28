@@ -3,18 +3,22 @@ use std::{env, fs};
 
 mod error;
 mod executor;
+mod repl_runner;
 mod script_runner;
 mod varstorage;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() != 2 {
-        eprintln!("Missing script argument");
-        return;
+    if args.len() == 2 {
+        exec_script(&args[1]);
+    } else {
+        repl_runner::start();
     }
+}
 
-    let Ok(script) = fs::read_to_string(&args[1]) else {
+fn exec_script(path: &str) {
+    let Ok(script) = fs::read_to_string(path) else {
         eprintln!("Failed to read script file");
         return;
     };
