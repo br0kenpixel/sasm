@@ -88,6 +88,63 @@ MOV x,1
 DMP x
 ```
 
+### ADD
+Adds a value to a variable. The first argument is the destination variable and the second argument is the value to be added. The source value can be a variable or a literal. If the source value is a variable, it's value is added to the destination variable.
+
+```
+VAR x
+VAR y
+
+MOV x,1
+MOV y,9
+ADD x,y
+
+DMP x
+```
+
+### SUB
+Subtracts a value from a variable. The first argument is the destination variable and the second argument is the value to be subtracted. The source value can be a variable or a literal. If the source value is a variable, it's value is subtracted from the destination variable.
+
+```
+VAR x
+VAR y
+
+MOV x,1
+MOV y,9
+SUB x,y
+
+DMP x
+```
+
+### CMP
+Compares 2 values. The first argument must be a variable and the second argument can be a variable or a literal. 
+
+```
+VAR x
+VAR y
+
+MOV x,1
+MOV y,9
+CMP x,y
+```
+
+### JNE
+Jumps to the specified line offset if the last comparison was not equal. The offset must be relative to the current line. If the offset is negative, it jumps backwards. If the offset is positive, it jumps forwards.
+
+```
+VAR x
+VAR y
+
+MOV x,1
+MOV y,9
+CMP x,y
+
+JNE 3
+DMP "They are equal"
+DIE
+DMP "They are not equal"
+```
+
 ### DIE
 Exits the program with a status code. If no status code is provided, it defaults to 0.
 
