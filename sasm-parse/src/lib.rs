@@ -60,55 +60,65 @@ impl TryFrom<&str> for Instruction {
 
         match instr {
             VAR => {
+                args.check_count_exact(1)?;
                 let ident = args.fetch_nth_as_ident(0).into_parse_err()?;
 
                 Ok(Self::CreateVariable(ident))
             }
             MOV => {
+                args.check_count_exact(2)?;
                 let dst = args.fetch_nth_as_ident(0).into_parse_err()?;
                 let src = args.fetch_nth_as_any(1).into_parse_err()?;
 
                 Ok(Self::Move(dst, src))
             }
             INC => {
+                args.check_count_exact(1)?;
                 let ident = args.fetch_nth_as_ident(0).into_parse_err()?;
 
                 Ok(Self::Increment(ident))
             }
             DEC => {
+                args.check_count_exact(1)?;
                 let ident = args.fetch_nth_as_ident(0).into_parse_err()?;
 
                 Ok(Self::Decrement(ident))
             }
             DMP => {
+                args.check_count_exact(1)?;
                 let expr = args.fetch_nth_as_any(0).into_parse_err()?;
 
                 Ok(Self::Dump(expr))
             }
             ADD => {
+                args.check_count_exact(1)?;
                 let var = args.fetch_nth_as_ident(0).into_parse_err()?;
                 let amount = args.fetch_nth_as_any(1).into_parse_err()?;
 
                 Ok(Self::Add(var, amount))
             }
             SUB => {
+                args.check_count_exact(1)?;
                 let var = args.fetch_nth_as_ident(0).into_parse_err()?;
                 let amount = args.fetch_nth_as_any(1).into_parse_err()?;
 
                 Ok(Self::Subtract(var, amount))
             }
             CMP => {
+                args.check_count_exact(2)?;
                 let var = args.fetch_nth_as_ident(0).into_parse_err()?;
                 let expr = args.fetch_nth_as_any(1).into_parse_err()?;
 
                 Ok(Self::Compare(var, expr))
             }
             JNE => {
+                args.check_count_exact(1)?;
                 let amount = args.fetch_nth_as_number(0).into_parse_err()?;
 
                 Ok(Self::JumpNotEqual(amount))
             }
             DIE => {
+                args.check_count(0, 1)?;
                 let expr = args.fetch_nth_as_number(0).into_optional()?;
 
                 Ok(Self::Die(expr.unwrap_or_default()))

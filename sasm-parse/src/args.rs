@@ -13,6 +13,30 @@ pub enum ArgFetchResult<T> {
 pub struct Arguments(Vec<Expression>);
 
 impl Arguments {
+    pub fn check_count(&self, min: usize, max: usize) -> Result<(), ParseError> {
+        let argc = self.0.len();
+
+        if argc < min {
+            return Err(ParseError::NotEnoughArgs {
+                got: argc,
+                expected: min,
+            });
+        }
+
+        if argc > max {
+            return Err(ParseError::TooManyArgs {
+                got: argc,
+                expected: max,
+            });
+        }
+
+        Ok(())
+    }
+
+    pub fn check_count_exact(&self, n: usize) -> Result<(), ParseError> {
+        self.check_count(n, n)
+    }
+
     pub fn fetch_nth_as_ident(&self, n: usize) -> ArgFetchResult<Identifier> {
         let Some(expr) = self.0.get(n) else {
             return ArgFetchResult::Missing;

@@ -16,4 +16,8 @@ pub enum ParseError {
     MismatchedTypes { got: String, expected: String },
     #[error("Missing end quotes for string expression")]
     MissingStringEndQuote,
+    #[error("Expected at least {expected} arguments, got {got}")]
+    NotEnoughArgs { got: usize, expected: usize },
+    #[error("Expected at most {expected} arguments, got {got}")]
+    TooManyArgs { got: usize, expected: usize },
 }
