@@ -11,11 +11,13 @@ pub enum RuntimeError {
     DuplicateVarDef(Identifier),
     #[error("Variable does not have a value")]
     NullDeref,
-    #[error("Only values of type 'Number' can be incremented")]
-    IllegalIncrement,
+    #[error("This operation requires a variable of type 'Number'")]
+    IllegalMathOp,
     #[error("Expected expression of type '{expected}', got '{got}'")]
     MismatchedTypes {
         got: &'static str,
         expected: &'static str,
     },
+    #[error("Division by zero")]
+    DivisionByZero,
 }

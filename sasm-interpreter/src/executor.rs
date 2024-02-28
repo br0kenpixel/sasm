@@ -24,30 +24,37 @@ pub fn execute(
             let value = pass_or_fetch(vars, src)?.clone();
             vars.set(dst, value)?;
         }
-        Instruction::Increment(ident) => single_step(ident, vars, 1)?,
-        Instruction::Decrement(ident) => single_step(ident, vars, -1)?,
+        Instruction::Increment(ident) => single_step(ident, vars, |current| current + 1)?,
+        Instruction::Decrement(ident) => single_step(ident, vars, |current| current - 1)?,
         Instruction::Dump(expr) => var_dump(pass_or_fetch_nullable(vars, expr)?),
         Instruction::Add(ident, expr) => {
-            let Expression::Number(amount) = pass_or_fetch(vars, expr)? else {
-                return Err(RuntimeError::MismatchedTypes {
-                    got: expr.type_name(),
-                    expected: "Number",
-                });
-            };
-            let amount = *amount;
+            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
 
-            single_step(ident, vars, amount)?;
+            single_step(ident, vars, |current| current + amount)?;
+        }
+        Instruction::Multiply(ident, expr) => {
+            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
+
+            single_step(ident, vars, |current| current * amount)?;
+        }
+        Instruction::Divide(ident, expr) => {
+            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
+
+            if amount == 0 {
+                return Err(RuntimeError::DivisionByZero);
+            }
+
+            single_step(ident, vars, |current| current / amount)?;
+        }
+        Instruction::Power(ident, expr) => {
+            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
+
+            single_step(ident, vars, |current| current.pow(amount as _))?;
         }
         Instruction::Subtract(ident, expr) => {
-            let Expression::Number(amount) = pass_or_fetch(vars, expr)? else {
-                return Err(RuntimeError::MismatchedTypes {
-                    got: expr.type_name(),
-                    expected: "Number",
-                });
-            };
-            let amount = *amount;
+            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
 
-            single_step(ident, vars, -amount)?;
+            single_step(ident, vars, |current| current - amount)?;
         }
         Instruction::Compare(ident, expr) => {
             let first = vars.get_nonnull(ident)?.clone();
@@ -91,19 +98,30 @@ pub fn pass_or_fetch_nullable<'a>(
     }
 }
 
-fn single_step(
+fn single_step<F: FnOnce(Number) -> Number>(
     ident: &Identifier,
     vars: &mut VariableStorage,
-    step: Number,
+    step: F,
 ) -> Result<(), RuntimeError> {
     let value_ref = vars.get_nonnull(ident)?;
 
     let Expression::Number(current) = value_ref else {
-        return Err(RuntimeError::IllegalIncrement);
+        return Err(RuntimeError::IllegalMathOp);
     };
 
-    vars.set(ident, Expression::Number(current + step))?;
+    vars.set(ident, Expression::Number(step(*current)))?;
     Ok(())
+}
+
+fn expect_number(expr: &Expression) -> Result<Number, RuntimeError> {
+    let Expression::Number(n) = expr else {
+        return Err(RuntimeError::MismatchedTypes {
+            got: expr.type_name(),
+            expected: "Number",
+        });
+    };
+
+    Ok(*n)
 }
 
 fn var_dump(expr: Option<&Expression>) {

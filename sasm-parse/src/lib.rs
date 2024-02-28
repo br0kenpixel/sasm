@@ -3,7 +3,7 @@ use args_sm::ArgParserStateMachine;
 use error::ParseError;
 use expression::{Expression, Number};
 use ident::Identifier;
-use instr_names::{ADD, CMP, DEC, DIE, DMP, INC, JEQ, JNE, MOV, SUB, VAR};
+use instr_names::{ADD, CMP, DEC, DIE, DIV, DMP, INC, JEQ, JNE, MOV, MUL, POW, SUB, VAR};
 
 mod args;
 mod args_sm;
@@ -21,6 +21,9 @@ pub enum Instruction {
     Dump(Expression),
     Add(Identifier, Expression),
     Subtract(Identifier, Expression),
+    Multiply(Identifier, Expression),
+    Divide(Identifier, Expression),
+    Power(Identifier, Expression),
     Compare(Identifier, Expression),
     JumpEqual(Number),
     JumpNotEqual(Number),
@@ -37,6 +40,9 @@ impl ToString for Instruction {
             Self::Dump(..) => DMP,
             Self::Add(..) => ADD,
             Self::Subtract(..) => SUB,
+            Self::Multiply(..) => MUL,
+            Self::Divide(..) => DIV,
+            Self::Power(..) => POW,
             Self::Compare(..) => CMP,
             Self::JumpEqual(..) => JEQ,
             Self::JumpNotEqual(..) => JNE,
@@ -105,6 +111,27 @@ impl TryFrom<&str> for Instruction {
                 let amount = args.fetch_nth_as_any(1).into_parse_err()?;
 
                 Ok(Self::Subtract(var, amount))
+            }
+            MUL => {
+                args.check_count_exact(2)?;
+                let var = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let amount = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Multiply(var, amount))
+            }
+            DIV => {
+                args.check_count_exact(2)?;
+                let var = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let amount = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Divide(var, amount))
+            }
+            POW => {
+                args.check_count_exact(2)?;
+                let var = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let amount = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Power(var, amount))
             }
             CMP => {
                 args.check_count_exact(2)?;
