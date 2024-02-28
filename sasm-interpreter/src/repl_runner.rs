@@ -6,6 +6,7 @@ use crate::{executor::execute, varstorage::VariableStorage};
 pub fn start() {
     let mut variables = VariableStorage::new();
     let mut stdin_reader = stdin().lines();
+    let mut cmp_result = false;
 
     println!("SASM Interpreter");
     println!("v{}\n", env!("CARGO_PKG_VERSION"));
@@ -19,7 +20,10 @@ pub fn start() {
         }
 
         match Instruction::try_from(line.as_str()) {
-            Ok(instr) => match execute(&instr, &mut variables) {
+            Ok(Instruction::JumpNotEqual(..)) => {
+                eprintln!("Jumps are not supported in REPL mode");
+            }
+            Ok(instr) => match execute(&instr, &mut variables, &mut cmp_result) {
                 Ok(_) => (),
                 Err(why) => {
                     eprintln!("Runtime error: {why}");

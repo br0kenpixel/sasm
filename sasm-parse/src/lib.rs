@@ -3,7 +3,7 @@ use args_sm::ArgParserStateMachine;
 use error::ParseError;
 use expression::Expression;
 use ident::Identifier;
-use instr_names::{DEC, DIE, DMP, INC, MOV, VAR};
+use instr_names::{ADD, CMP, DEC, DIE, DMP, INC, JNE, MOV, SUB, VAR};
 
 mod args;
 mod args_sm;
@@ -19,6 +19,10 @@ pub enum Instruction {
     Increment(Identifier),
     Decrement(Identifier),
     Dump(Expression),
+    Add(Identifier, Expression),
+    Subtract(Identifier, Expression),
+    Compare(Identifier, Expression),
+    JumpNotEqual(Expression),
     Die(Expression),
 }
 
@@ -30,6 +34,10 @@ impl ToString for Instruction {
             Self::Increment(..) => INC,
             Self::Decrement(..) => DEC,
             Self::Dump(..) => DMP,
+            Self::Add(..) => ADD,
+            Self::Subtract(..) => SUB,
+            Self::Compare(..) => CMP,
+            Self::JumpNotEqual(..) => JNE,
             Self::Die(..) => DIE,
         }
         .into()
@@ -72,6 +80,29 @@ impl TryFrom<&str> for Instruction {
                 let expr = args.fetch_nth_as_any(0).into_parse_err()?;
 
                 Ok(Self::Dump(expr))
+            }
+            ADD => {
+                let var = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let amount = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Add(var, amount))
+            }
+            SUB => {
+                let var = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let amount = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Subtract(var, amount))
+            }
+            CMP => {
+                let var = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let expr = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Compare(var, expr))
+            }
+            JNE => {
+                let amount = args.fetch_nth_as_number(0).into_parse_err()?;
+
+                Ok(Self::JumpNotEqual(amount))
             }
             DIE => {
                 let expr = args.fetch_nth_as_number(0).into_optional()?;

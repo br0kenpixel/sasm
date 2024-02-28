@@ -8,11 +8,12 @@ use sasm_parse::Instruction;
 pub fn start(cmds: &[Instruction]) {
     let mut variables = VariableStorage::new();
     let mut exec_pos = 0;
+    let mut cmp_result = false;
 
     while exec_pos < cmds.len() {
         let instr = &cmds[exec_pos];
 
-        match execute(instr, &mut variables) {
+        match execute(instr, &mut variables, &mut cmp_result) {
             Ok(ExecutorState::Ok) => exec_pos += 1,
             Ok(ExecutorState::Goto(offset)) => {
                 if offset > 0 {

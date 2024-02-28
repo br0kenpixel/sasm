@@ -1,11 +1,10 @@
-use std::process::exit;
-
 use crate::{error::RuntimeError, varstorage::VariableStorage};
 use sasm_parse::{
     expression::{Expression, Number},
     ident::Identifier,
     Instruction,
 };
+use std::process::exit;
 
 pub enum ExecutorState {
     Ok,
@@ -15,6 +14,7 @@ pub enum ExecutorState {
 pub fn execute(
     instr: &Instruction,
     vars: &mut VariableStorage,
+    cmp_result: &mut bool,
 ) -> Result<ExecutorState, RuntimeError> {
     match instr {
         Instruction::CreateVariable(ident) => {
@@ -27,6 +27,44 @@ pub fn execute(
         Instruction::Increment(ident) => single_step(ident, vars, 1)?,
         Instruction::Decrement(ident) => single_step(ident, vars, -1)?,
         Instruction::Dump(expr) => var_dump(pass_or_fetch_nullable(vars, expr)?),
+        Instruction::Add(ident, expr) => {
+            let Expression::Number(amount) = pass_or_fetch(vars, expr)? else {
+                return Err(RuntimeError::MismatchedTypes {
+                    got: expr.type_name(),
+                    expected: "Number",
+                });
+            };
+            let amount = *amount;
+
+            single_step(ident, vars, amount)?;
+        }
+        Instruction::Subtract(ident, expr) => {
+            let Expression::Number(amount) = pass_or_fetch(vars, expr)? else {
+                return Err(RuntimeError::MismatchedTypes {
+                    got: expr.type_name(),
+                    expected: "Number",
+                });
+            };
+            let amount = *amount;
+
+            single_step(ident, vars, -amount)?;
+        }
+        Instruction::Compare(ident, expr) => {
+            let first = vars.get_nonnull(ident)?.clone();
+            let second = pass_or_fetch(vars, expr)?;
+
+            *cmp_result = &first == second;
+        }
+        Instruction::JumpNotEqual(offset) => {
+            let Expression::Number(value) = offset else {
+                return Err(RuntimeError::MismatchedTypes {
+                    got: offset.type_name(),
+                    expected: "Number",
+                });
+            };
+
+            return Ok(ExecutorState::Goto(*value as isize));
+        }
         Instruction::Die(Expression::Number(code)) => exit(*code as i32),
         Instruction::Die(..) => unreachable!(),
     }
