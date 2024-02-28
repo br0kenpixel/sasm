@@ -1,4 +1,8 @@
-use crate::{error::ParseError, expression::Expression, ident::Identifier};
+use crate::{
+    error::ParseError,
+    expression::{Expression, Number},
+    ident::Identifier,
+};
 
 pub enum ArgFetchResult<T> {
     Found(T),
@@ -32,11 +36,13 @@ impl Arguments {
         ArgFetchResult::Missing
     }
 
-    pub fn fetch_nth_as_number(&self, n: usize) -> ArgFetchResult<Expression> {
+    pub fn fetch_nth_as_number(&self, n: usize) -> ArgFetchResult<Number> {
         match self.fetch_nth_as_any(n) {
             ArgFetchResult::Missing => ArgFetchResult::Missing,
-            err @ ArgFetchResult::InvalidType { .. } => err,
-            num @ ArgFetchResult::Found(Expression::Number(..)) => num,
+            ArgFetchResult::InvalidType { got, expected } => {
+                ArgFetchResult::InvalidType { got, expected }
+            }
+            ArgFetchResult::Found(Expression::Number(n)) => ArgFetchResult::Found(n),
             ArgFetchResult::Found(invalid) => ArgFetchResult::InvalidType {
                 got: invalid.to_string(),
                 expected: "Number".into(),

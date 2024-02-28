@@ -1,7 +1,7 @@
 use args::Arguments;
 use args_sm::ArgParserStateMachine;
 use error::ParseError;
-use expression::Expression;
+use expression::{Expression, Number};
 use ident::Identifier;
 use instr_names::{ADD, CMP, DEC, DIE, DMP, INC, JNE, MOV, SUB, VAR};
 
@@ -22,8 +22,8 @@ pub enum Instruction {
     Add(Identifier, Expression),
     Subtract(Identifier, Expression),
     Compare(Identifier, Expression),
-    JumpNotEqual(Expression),
-    Die(Expression),
+    JumpNotEqual(Number),
+    Die(Number),
 }
 
 impl ToString for Instruction {
@@ -107,7 +107,7 @@ impl TryFrom<&str> for Instruction {
             DIE => {
                 let expr = args.fetch_nth_as_number(0).into_optional()?;
 
-                Ok(Self::Die(expr.unwrap_or(Expression::Number(0))))
+                Ok(Self::Die(expr.unwrap_or_default()))
             }
             other => Err(Self::Error::IllegalInstruction(other.into())),
         }

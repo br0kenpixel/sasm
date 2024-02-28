@@ -56,17 +56,9 @@ pub fn execute(
             *cmp_result = &first == second;
         }
         Instruction::JumpNotEqual(offset) => {
-            let Expression::Number(value) = offset else {
-                return Err(RuntimeError::MismatchedTypes {
-                    got: offset.type_name(),
-                    expected: "Number",
-                });
-            };
-
-            return Ok(ExecutorState::Goto(*value as isize));
+            return Ok(ExecutorState::Goto(*offset as isize));
         }
-        Instruction::Die(Expression::Number(code)) => exit(*code as i32),
-        Instruction::Die(..) => unreachable!(),
+        Instruction::Die(code) => exit(*code as i32),
     }
 
     Ok(ExecutorState::Ok)
