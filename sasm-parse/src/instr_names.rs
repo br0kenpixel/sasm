@@ -7,4 +7,5 @@ pub const ADD: &str = "ADD";
 pub const SUB: &str = "SUB";
 pub const CMP: &str = "CMP";
 pub const JNE: &str = "JNE";
+pub const JEQ: &str = "JEQ";
 pub const DIE: &str = "DIE";

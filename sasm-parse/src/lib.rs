@@ -3,7 +3,7 @@ use args_sm::ArgParserStateMachine;
 use error::ParseError;
 use expression::{Expression, Number};
 use ident::Identifier;
-use instr_names::{ADD, CMP, DEC, DIE, DMP, INC, JNE, MOV, SUB, VAR};
+use instr_names::{ADD, CMP, DEC, DIE, DMP, INC, JEQ, JNE, MOV, SUB, VAR};
 
 mod args;
 mod args_sm;
@@ -22,6 +22,7 @@ pub enum Instruction {
     Add(Identifier, Expression),
     Subtract(Identifier, Expression),
     Compare(Identifier, Expression),
+    JumpEqual(Number),
     JumpNotEqual(Number),
     Die(Number),
 }
@@ -37,6 +38,7 @@ impl ToString for Instruction {
             Self::Add(..) => ADD,
             Self::Subtract(..) => SUB,
             Self::Compare(..) => CMP,
+            Self::JumpEqual(..) => JEQ,
             Self::JumpNotEqual(..) => JNE,
             Self::Die(..) => DIE,
         }
@@ -116,6 +118,12 @@ impl TryFrom<&str> for Instruction {
                 let amount = args.fetch_nth_as_number(0).into_parse_err()?;
 
                 Ok(Self::JumpNotEqual(amount))
+            }
+            JEQ => {
+                args.check_count_exact(1)?;
+                let amount = args.fetch_nth_as_number(0).into_parse_err()?;
+
+                Ok(Self::JumpEqual(amount))
             }
             DIE => {
                 args.check_count(0, 1)?;

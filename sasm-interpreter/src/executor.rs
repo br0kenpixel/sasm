@@ -55,6 +55,11 @@ pub fn execute(
 
             *cmp_result = &first == second;
         }
+        Instruction::JumpEqual(offset) => {
+            if *cmp_result {
+                return Ok(ExecutorState::Goto(*offset as isize));
+            }
+        }
         Instruction::JumpNotEqual(offset) => {
             if !*cmp_result {
                 return Ok(ExecutorState::Goto(*offset as isize));
