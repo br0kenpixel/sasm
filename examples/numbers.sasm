@@ -1,0 +1,10 @@
+VAR x
+MOV x,1
+
+CMP x,11
+JEQ 4
+DMP x
+INC x
+JMP -4
+
+DIE
