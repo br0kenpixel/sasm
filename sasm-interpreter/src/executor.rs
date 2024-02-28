@@ -1,5 +1,9 @@
 use crate::{error::RuntimeError, varstorage::VariableStorage};
-use sasm_parse::{expression::Expression, Instruction};
+use sasm_parse::{
+    expression::{Expression, Number},
+    ident::Identifier,
+    Instruction,
+};
 
 pub enum ExecutorState {
     Ok,
@@ -30,19 +34,8 @@ pub fn execute(
 
             vars.set(dst, value)?;
         }
-        Instruction::Increment(ident) => {
-            let value_ref = vars.get(ident)?;
-
-            if value_ref.is_none() {
-                return Err(RuntimeError::NullDeref);
-            }
-
-            let Expression::Number(current) = value_ref.unwrap() else {
-                return Err(RuntimeError::IllegalIncrement);
-            };
-
-            vars.set(ident, Expression::Number(current + 1))?;
-        }
+        Instruction::Increment(ident) => single_step(ident, vars, 1)?,
+        Instruction::Decrement(ident) => single_step(ident, vars, -1)?,
         Instruction::Dump(expr) => {
             if let Expression::Identifier(ident) = expr {
                 var_dump(vars.get(ident)?);
@@ -53,6 +46,25 @@ pub fn execute(
     }
 
     Ok(ExecutorState::Ok)
+}
+
+fn single_step(
+    ident: &Identifier,
+    vars: &mut VariableStorage,
+    step: Number,
+) -> Result<(), RuntimeError> {
+    let value_ref = vars.get(ident)?;
+
+    if value_ref.is_none() {
+        return Err(RuntimeError::NullDeref);
+    }
+
+    let Expression::Number(current) = value_ref.unwrap() else {
+        return Err(RuntimeError::IllegalIncrement);
+    };
+
+    vars.set(ident, Expression::Number(current + step))?;
+    Ok(())
 }
 
 fn var_dump(expr: Option<&Expression>) {

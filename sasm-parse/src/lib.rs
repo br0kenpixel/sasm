@@ -3,7 +3,7 @@ use args_sm::ArgParserStateMachine;
 use error::ParseError;
 use expression::Expression;
 use ident::Identifier;
-use instr_names::{DMP, INC, MOV, VAR};
+use instr_names::{DEC, DMP, INC, MOV, VAR};
 
 mod args;
 mod args_sm;
@@ -17,6 +17,7 @@ pub enum Instruction {
     CreateVariable(Identifier),
     Move(Identifier, Expression),
     Increment(Identifier),
+    Decrement(Identifier),
     Dump(Expression),
 }
 
@@ -26,6 +27,7 @@ impl ToString for Instruction {
             Self::CreateVariable(..) => VAR,
             Self::Move(..) => MOV,
             Self::Increment(..) => INC,
+            Self::Decrement(..) => DEC,
             Self::Dump(..) => DMP,
         }
         .into()
@@ -58,6 +60,11 @@ impl TryFrom<&str> for Instruction {
                 let ident = args.fetch_nth_as_ident(0).into_parse_err()?;
 
                 Ok(Self::Increment(ident))
+            }
+            DEC => {
+                let ident = args.fetch_nth_as_ident(0).into_parse_err()?;
+
+                Ok(Self::Decrement(ident))
             }
             DMP => {
                 let expr = args.fetch_nth_as_any(0).into_parse_err()?;
