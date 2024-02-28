@@ -116,6 +116,48 @@ SUB x,y
 DMP x
 ```
 
+### MUL
+Multiplies a variable by a value. The first argument is the destination variable and the second argument is the value to be multiplied. The source value can be a variable or a literal.
+
+```
+VAR x
+VAR y
+
+MOV x,1
+MOV y,9
+
+MUL x,y
+DMP x
+```
+
+### DIV
+Divides a variable by a value. The first argument is the destination variable and the second argument is the value to be divided. The source value can be a variable or a literal.
+
+```
+VAR x
+VAR y
+
+MOV x,9
+MOV y,3
+
+DIV x,y
+DMP x
+```
+
+### POW
+Raises a variable to a power. The first argument is the destination variable and the second argument is the value to be raised to. The source value can be a variable or a literal.
+
+```
+VAR x
+VAR y
+
+MOV x,2
+MOV y,3
+
+POW x,y
+DMP x
+```
+
 ### CMP
 Compares 2 values. The first argument must be a variable and the second argument can be a variable or a literal. 
 
@@ -143,6 +185,23 @@ JNE 3
 DMP "They are equal"
 DIE
 DMP "They are not equal"
+```
+
+### JEQ
+Jumps to the specified line offset if the last comparison was equal. The offset must be relative to the current line. If the offset is negative, it jumps backwards. If the offset is positive, it jumps forwards.
+
+```
+VAR x
+VAR y
+
+MOV x,1
+MOV y,9
+CMP x,y
+
+JEQ 3
+DMP "They are not equal"
+DIE
+DMP "They are equal"
 ```
 
 ### DIE
