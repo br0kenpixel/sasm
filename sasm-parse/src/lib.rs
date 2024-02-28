@@ -1,3 +1,5 @@
+#![allow(clippy::module_name_repetitions)]
+
 use args::Arguments;
 use args_sm::ArgParserStateMachine;
 use error::ParseError;

@@ -42,7 +42,8 @@ impl VariableStorage {
         if self.get(ident).is_ok() {
             self.replace(ident, value)
         } else {
-            self.insert(ident, value)
+            self.insert(ident, value);
+            Ok(())
         }
     }
 
@@ -60,8 +61,7 @@ impl VariableStorage {
         Ok(())
     }
 
-    fn insert(&mut self, ident: &Identifier, value: Expression) -> Result<(), RuntimeError> {
+    fn insert(&mut self, ident: &Identifier, value: Expression) {
         self.0.insert(ident.clone(), Some(value));
-        Ok(())
     }
 }

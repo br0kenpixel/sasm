@@ -79,7 +79,7 @@ pub fn execute(
 }
 
 pub fn pass_or_fetch<'a>(
-    vars: &'a mut VariableStorage,
+    vars: &'a VariableStorage,
     expr: &'a Expression,
 ) -> Result<&'a Expression, RuntimeError> {
     match expr {
@@ -89,7 +89,7 @@ pub fn pass_or_fetch<'a>(
 }
 
 pub fn pass_or_fetch_nullable<'a>(
-    vars: &'a mut VariableStorage,
+    vars: &'a VariableStorage,
     expr: &'a Expression,
 ) -> Result<Option<&'a Expression>, RuntimeError> {
     match expr {
@@ -113,7 +113,7 @@ fn single_step<F: FnOnce(Number) -> Number>(
     Ok(())
 }
 
-fn expect_number(expr: &Expression) -> Result<Number, RuntimeError> {
+const fn expect_number(expr: &Expression) -> Result<Number, RuntimeError> {
     let Expression::Number(n) = expr else {
         return Err(RuntimeError::MismatchedTypes {
             got: expr.type_name(),

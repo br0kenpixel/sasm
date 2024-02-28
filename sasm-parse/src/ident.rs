@@ -9,6 +9,7 @@ impl Identifier {
         Self(name.as_ref().into())
     }
 
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.0
     }

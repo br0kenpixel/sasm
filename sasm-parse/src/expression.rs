@@ -26,6 +26,7 @@ impl ToString for Expression {
 }
 
 impl Expression {
+    #[must_use]
     pub fn into_ident(self) -> Option<Identifier> {
         if let Self::Identifier(ident) = self {
             return Some(ident);
@@ -34,10 +35,12 @@ impl Expression {
         None
     }
 
+    #[must_use]
     pub fn cmp_type(&self, rhs: &Self) -> bool {
         mem::discriminant(self) == mem::discriminant(rhs)
     }
 
+    #[must_use]
     pub const fn type_name(&self) -> &'static str {
         match self {
             Self::Identifier(..) => "Identifier",
