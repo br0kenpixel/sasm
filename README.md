@@ -204,6 +204,18 @@ DIE
 DMP "They are equal"
 ```
 
+### JMP
+Jumps to the specified line offset. The offset must be relative to the current line. If the offset is negative, it jumps backwards. If the offset is positive, it jumps forwards.
+
+```
+DMP 1
+DMP 2
+JMP 2
+DMP 3
+DMP 4
+```
+This will print `1`, `2`, `4`.
+
 ### DIE
 Exits the program with a status code. If no status code is provided, it defaults to 0.
 
@@ -213,5 +225,22 @@ DIE 1
 
 Or to exit with a status code of 0:
 ```
+DIE
+```
+
+## Loops
+Since SASM does not allow defining code blocks, loops are implemented using `CMP` and `JNE`/`JEQ` instructions.
+Here's an example of a simple loop that prints the numbers 1 to 10:
+
+```
+VAR x
+MOV x,1
+
+CMP x,11
+JEQ 4
+DMP x
+INC x
+JMP -4
+
 DIE
 ```
