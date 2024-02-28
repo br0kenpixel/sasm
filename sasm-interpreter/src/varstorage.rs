@@ -1,7 +1,6 @@
+use crate::error::RuntimeError;
 use sasm_parse::{expression::Expression, ident::Identifier};
 use std::collections::HashMap;
-
-use crate::error::RuntimeError;
 
 pub struct VariableStorage(HashMap<Identifier, Option<Expression>>);
 
