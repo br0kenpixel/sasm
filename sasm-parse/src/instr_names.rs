@@ -11,4 +11,5 @@ pub const POW: &str = "POW";
 pub const CMP: &str = "CMP";
 pub const JNE: &str = "JNE";
 pub const JEQ: &str = "JEQ";
+pub const JMP: &str = "JMP";
 pub const DIE: &str = "DIE";

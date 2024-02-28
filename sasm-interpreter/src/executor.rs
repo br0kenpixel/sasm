@@ -72,6 +72,9 @@ pub fn execute(
                 return Ok(ExecutorState::Goto(*offset as isize));
             }
         }
+        Instruction::Jump(offset) => {
+            return Ok(ExecutorState::Goto(*offset as isize));
+        }
         Instruction::Die(code) => exit(*code as i32),
     }
 
