@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use crate::{error::RuntimeError, varstorage::VariableStorage};
 use sasm_parse::{
     expression::{Expression, Number},
@@ -25,6 +27,8 @@ pub fn execute(
         Instruction::Increment(ident) => single_step(ident, vars, 1)?,
         Instruction::Decrement(ident) => single_step(ident, vars, -1)?,
         Instruction::Dump(expr) => var_dump(pass_or_fetch_nullable(vars, expr)?),
+        Instruction::Die(Expression::Number(code)) => exit(*code as i32),
+        Instruction::Die(..) => unreachable!(),
     }
 
     Ok(ExecutorState::Ok)

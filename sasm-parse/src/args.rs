@@ -31,6 +31,18 @@ impl Arguments {
 
         ArgFetchResult::Missing
     }
+
+    pub fn fetch_nth_as_number(&self, n: usize) -> ArgFetchResult<Expression> {
+        match self.fetch_nth_as_any(n) {
+            ArgFetchResult::Missing => ArgFetchResult::Missing,
+            err @ ArgFetchResult::InvalidType { .. } => err,
+            num @ ArgFetchResult::Found(Expression::Number(..)) => num,
+            ArgFetchResult::Found(invalid) => ArgFetchResult::InvalidType {
+                got: invalid.to_string(),
+                expected: "Number".into(),
+            },
+        }
+    }
 }
 
 impl<T> ArgFetchResult<T> {
@@ -41,6 +53,16 @@ impl<T> ArgFetchResult<T> {
             Self::InvalidType { got, expected } => {
                 Err(ParseError::MismatchedTypes { got, expected })
             }
+        }
+    }
+
+    pub fn into_optional(self) -> Result<Option<T>, ParseError> {
+        match self {
+            Self::Missing => Ok(None),
+            Self::InvalidType { got, expected } => {
+                Err(ParseError::MismatchedTypes { got, expected })
+            }
+            Self::Found(obj) => Ok(Some(obj)),
         }
     }
 }

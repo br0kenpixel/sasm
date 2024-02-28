@@ -1,9 +1,9 @@
-use args::Arguments;
+use args::{ArgFetchResult, Arguments};
 use args_sm::ArgParserStateMachine;
 use error::ParseError;
 use expression::Expression;
 use ident::Identifier;
-use instr_names::{DEC, DMP, INC, MOV, VAR};
+use instr_names::{DEC, DIE, DMP, INC, MOV, VAR};
 
 mod args;
 mod args_sm;
@@ -19,6 +19,7 @@ pub enum Instruction {
     Increment(Identifier),
     Decrement(Identifier),
     Dump(Expression),
+    Die(Expression),
 }
 
 impl ToString for Instruction {
@@ -29,6 +30,7 @@ impl ToString for Instruction {
             Self::Increment(..) => INC,
             Self::Decrement(..) => DEC,
             Self::Dump(..) => DMP,
+            Self::Die(..) => DIE,
         }
         .into()
     }
@@ -70,6 +72,11 @@ impl TryFrom<&str> for Instruction {
                 let expr = args.fetch_nth_as_any(0).into_parse_err()?;
 
                 Ok(Self::Dump(expr))
+            }
+            DIE => {
+                let expr = args.fetch_nth_as_number(0).into_optional()?;
+
+                Ok(Self::Die(expr.unwrap_or(Expression::Number(0))))
             }
             other => Err(Self::Error::IllegalInstruction(other.into())),
         }
