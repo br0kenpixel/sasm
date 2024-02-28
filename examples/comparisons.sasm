@@ -1,0 +1,11 @@
+VAR x
+VAR y
+
+MOV x,1
+MOV y,2
+CMP x,y
+
+JNE 3
+DMP "They are equal"
+DIE
+DMP "They are not equal"
