@@ -48,8 +48,12 @@ impl TryFrom<&str> for Instruction {
     type Error = ParseError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let Some((instr, maybe_args)) = value.split_once(' ') else {
-            return Err(Self::Error::MissingInstrArgsSep);
+        let (instr, maybe_args) = if value.len() == 3 {
+            (value, "")
+        } else {
+            value
+                .split_once(' ')
+                .ok_or(Self::Error::MissingInstrArgsSep)?
         };
 
         let args: Arguments = ArgParserStateMachine::parse_args(maybe_args)?.into();
