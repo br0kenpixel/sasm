@@ -2,7 +2,7 @@
 *Simple Assembly* is a simple high-level assembly-like interpreted scripting language. It's designed for educational purposes.
 
 ## Basics
-SASM uses "instrcutions" to perform operations. Each instruction is a single line of code. It does __not__ support functions or procedures. It also doesn't support any kind of modules or libraries. You cannot import any external code.
+SASM uses "instructions" to perform operations. Each instruction is a single line of code. It does __not__ support functions or procedures. It also doesn't support any kind of modules or libraries. You cannot import any external code.
 
 SASM implements the following data types:
 - Numbers
