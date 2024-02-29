@@ -10,7 +10,8 @@ SASM implements the following data types:
 
 Variables are partially statically typed. Their type is determined by the first value assigned to them. Once a variable is assigned a value, it's type cannot be changed.
 
-__Check the [wiki page](https://github.com/br0kenpixel/sasm/wiki) for a detailed guide.__
+## Wiki & Guides
+Wiki home page can be found [here](https://github.com/br0kenpixel/sasm/wiki).
 
 ## Syntax
 A single instruction is made up of 2 parts:
