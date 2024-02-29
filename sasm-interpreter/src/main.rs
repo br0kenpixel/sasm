@@ -1,4 +1,4 @@
-#![allow(
+/*#![allow(
     clippy::module_name_repetitions,
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss
@@ -50,3 +50,6 @@ fn exec_script(path: &str) {
     let commands: Vec<_> = instructions.into_iter().map(Result::unwrap).collect();
     script_runner::start(&commands);
 }
+*/
+
+fn main() {}

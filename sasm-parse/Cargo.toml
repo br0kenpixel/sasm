@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 itertools = "0.12.1"
+strum = { version = "0.26.1", features = ["derive"] }
 thiserror = "1.0.57"

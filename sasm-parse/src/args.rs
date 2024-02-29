@@ -10,6 +10,7 @@ pub enum ArgFetchResult<T> {
     InvalidType { got: String, expected: String },
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Arguments(Vec<Expression>);
 
 impl Arguments {
