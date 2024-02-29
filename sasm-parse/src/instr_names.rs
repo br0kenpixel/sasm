@@ -1,15 +1,24 @@
-pub const VAR: &str = "VAR";
-pub const MOV: &str = "MOV";
-pub const INC: &str = "INC";
-pub const DEC: &str = "DEC";
-pub const DMP: &str = "DMP";
-pub const ADD: &str = "ADD";
-pub const SUB: &str = "SUB";
-pub const MUL: &str = "MUL";
-pub const DIV: &str = "DIV";
-pub const POW: &str = "POW";
-pub const CMP: &str = "CMP";
-pub const JNE: &str = "JNE";
-pub const JEQ: &str = "JEQ";
-pub const JMP: &str = "JMP";
-pub const DIE: &str = "DIE";
+macro_rules! define_instr_names {
+    ($($name:ident),*) => {
+        $(pub const $name: &str = stringify!($name);)*
+    };
+}
+
+#[rustfmt::skip]
+define_instr_names!(
+    VAR,
+    MOV,
+    INC,
+    DEC,
+    DMP,
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    POW,
+    CMP,
+    JNE,
+    JEQ,
+    JMP,
+    DIE
+);
