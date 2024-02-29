@@ -1,8 +1,8 @@
-use strum::EnumString;
+use strum::{Display, EnumString};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, EnumString)]
+#[derive(Debug, Display, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, EnumString)]
 pub enum Instruction {
-    #[strum(serialize = "VAR")]
+    #[strum(to_string = "VAR")]
     CreateVariable,
     Dump,
 }

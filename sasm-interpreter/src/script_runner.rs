@@ -3,9 +3,9 @@ use crate::{
     executor::{execute, ExecutorState},
     varstorage::VariableStorage,
 };
-use sasm_parse::Instruction;
+use sasm_parse::Command;
 
-pub fn start(cmds: &[Instruction]) {
+pub fn start(cmds: &[Command]) {
     let mut variables = VariableStorage::new();
     let mut exec_pos = 0;
     let mut cmp_result = false;
@@ -35,8 +35,8 @@ pub fn start(cmds: &[Instruction]) {
     }
 }
 
-fn report_runtime_err(exec_pos: usize, instr: &Instruction, err: &RuntimeError) {
+fn report_runtime_err(exec_pos: usize, cmd: &Command, err: &RuntimeError) {
     eprintln!("Runtime error on line {}:", exec_pos + 1);
-    eprintln!("\t-> {}", instr.to_string());
+    eprintln!("\t-> {}", cmd.instr());
     eprintln!("\t|- {err}");
 }

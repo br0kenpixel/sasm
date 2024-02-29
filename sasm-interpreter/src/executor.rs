@@ -2,9 +2,9 @@ use crate::{error::RuntimeError, varstorage::VariableStorage};
 use sasm_parse::{
     expression::{Expression, Number},
     ident::Identifier,
-    Instruction,
+    instr::Instruction,
+    Command,
 };
-use std::process::exit;
 
 pub enum ExecutorState {
     Ok,
@@ -12,71 +12,12 @@ pub enum ExecutorState {
 }
 
 pub fn execute(
-    instr: &Instruction,
+    cmd: &Command,
     vars: &mut VariableStorage,
     cmp_result: &mut bool,
 ) -> Result<ExecutorState, RuntimeError> {
-    match instr {
-        Instruction::CreateVariable(ident) => {
-            vars.create(ident)?;
-        }
-        Instruction::Move(dst, src) => {
-            let value = pass_or_fetch(vars, src)?.clone();
-            vars.set(dst, value)?;
-        }
-        Instruction::Increment(ident) => single_step(ident, vars, |current| current + 1)?,
-        Instruction::Decrement(ident) => single_step(ident, vars, |current| current - 1)?,
-        Instruction::Dump(expr) => var_dump(pass_or_fetch_nullable(vars, expr)?),
-        Instruction::Add(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            single_step(ident, vars, |current| current + amount)?;
-        }
-        Instruction::Multiply(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            single_step(ident, vars, |current| current * amount)?;
-        }
-        Instruction::Divide(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            if amount == 0 {
-                return Err(RuntimeError::DivisionByZero);
-            }
-
-            single_step(ident, vars, |current| current / amount)?;
-        }
-        Instruction::Power(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            single_step(ident, vars, |current| current.pow(amount as _))?;
-        }
-        Instruction::Subtract(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            single_step(ident, vars, |current| current - amount)?;
-        }
-        Instruction::Compare(ident, expr) => {
-            let first = vars.get_nonnull(ident)?.clone();
-            let second = pass_or_fetch(vars, expr)?;
-
-            *cmp_result = &first == second;
-        }
-        Instruction::JumpEqual(offset) => {
-            if *cmp_result {
-                return Ok(ExecutorState::Goto(*offset as isize));
-            }
-        }
-        Instruction::JumpNotEqual(offset) => {
-            if !*cmp_result {
-                return Ok(ExecutorState::Goto(*offset as isize));
-            }
-        }
-        Instruction::Jump(offset) => {
-            return Ok(ExecutorState::Goto(*offset as isize));
-        }
-        Instruction::Die(code) => exit(*code as i32),
-    }
+    todo!();
+    //match cmd.instr() {}
 
     Ok(ExecutorState::Ok)
 }

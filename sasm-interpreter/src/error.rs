@@ -1,4 +1,4 @@
-use sasm_parse::ident::Identifier;
+use sasm_parse::{args::ArgFetchResult, ident::Identifier};
 use thiserror::Error;
 
 #[derive(Debug, Error)]

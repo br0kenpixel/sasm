@@ -1,4 +1,4 @@
-use sasm_parse::Instruction;
+use sasm_parse::Command;
 use std::io::{stdin, stdout, Write};
 
 use crate::{executor::execute, varstorage::VariableStorage};
@@ -19,10 +19,10 @@ pub fn start() {
             continue;
         }
 
-        match Instruction::try_from(line.as_str()) {
-            Ok(Instruction::JumpNotEqual(..)) => {
-                eprintln!("Jumps are not supported in REPL mode");
-            }
+        match Command::try_from(line.as_str()) {
+            //Ok(Instruction::JumpNotEqual(..)) => {
+            //    eprintln!("Jumps are not supported in REPL mode");
+            //}
             Ok(instr) => match execute(&instr, &mut variables, &mut cmp_result) {
                 Ok(_) => (),
                 Err(why) => {

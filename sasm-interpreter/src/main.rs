@@ -1,10 +1,10 @@
-/*#![allow(
+#![allow(
     clippy::module_name_repetitions,
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss
 )]
 
-use sasm_parse::Instruction;
+use sasm_parse::Command;
 use std::{env, fs};
 
 mod error;
@@ -32,7 +32,7 @@ fn exec_script(path: &str) {
     let instructions: Vec<_> = script
         .lines()
         .filter(|line| !line.is_empty())
-        .map(Instruction::try_from)
+        .map(Command::try_from)
         .collect();
 
     let mut errors = instructions
@@ -50,6 +50,3 @@ fn exec_script(path: &str) {
     let commands: Vec<_> = instructions.into_iter().map(Result::unwrap).collect();
     script_runner::start(&commands);
 }
-*/
-
-fn main() {}
