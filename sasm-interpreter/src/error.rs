@@ -1,4 +1,4 @@
-use sasm_parse::{args::ArgFetchResult, ident::Identifier};
+use sasm_parse::{args::ArgFetchResult, error::ParseError, ident::Identifier};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -20,4 +20,6 @@ pub enum RuntimeError {
     },
     #[error("Division by zero")]
     DivisionByZero,
+    #[error("Failed to parse command: {0}")]
+    ParseError(#[from] ParseError),
 }

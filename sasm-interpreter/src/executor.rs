@@ -1,5 +1,6 @@
 use crate::{error::RuntimeError, varstorage::VariableStorage};
 use sasm_parse::{
+    args::Arguments,
     expression::{Expression, Number},
     ident::Identifier,
     instr::Instruction,
@@ -16,10 +17,74 @@ pub fn execute(
     vars: &mut VariableStorage,
     cmp_result: &mut bool,
 ) -> Result<ExecutorState, RuntimeError> {
-    todo!();
-    //match cmd.instr() {}
+    match cmd.instr() {
+        Instruction::CreateVariable => {
+            cmd.args().check_count_exact(1)?;
+            let ident = cmd.args().fetch_nth_as_ident(0).into_parse_err()?;
+
+            vars.create(&ident)?;
+        }
+        Instruction::Move => {
+            cmd.args().check_count_exact(2)?;
+            let dst = cmd.args().fetch_nth_as_ident(0).into_parse_err()?;
+            let src = cmd.args().fetch_nth_as_any(1).into_parse_err()?;
+            let real_src = pass_or_fetch(vars, &src)?;
+
+            vars.set(&dst, real_src.clone())?;
+        }
+        Instruction::Increment => {
+            cmd.args().check_count_exact(1)?;
+            let ident = cmd.args().fetch_nth_as_ident(0).into_parse_err()?;
+
+            single_step(&ident, vars, |current| current + 1)?;
+        }
+        Instruction::Decrement => {
+            cmd.args().check_count_exact(1)?;
+            let ident = cmd.args().fetch_nth_as_ident(0).into_parse_err()?;
+
+            single_step(&ident, vars, |current| current - 1)?;
+        }
+        Instruction::Dump => {
+            cmd.args().check_count_exact(1)?;
+            let expr = cmd.args().fetch_nth_as_any(0).into_parse_err()?;
+            let real_value = pass_or_fetch_nullable(vars, &expr)?;
+
+            var_dump(real_value);
+        }
+        Instruction::Add => {
+            simple_math_op(cmd.args(), vars, |current, operand| current + operand)?;
+        }
+        Instruction::Subtract => {
+            simple_math_op(cmd.args(), vars, |current, operand| current - operand)?;
+        }
+        Instruction::Multiply => {
+            simple_math_op(cmd.args(), vars, |current, operand| current * operand)?;
+        }
+        Instruction::Divide => {
+            simple_math_op(cmd.args(), vars, |current, operand| current / operand)?;
+        }
+        Instruction::Power => {
+            simple_math_op(cmd.args(), vars, |current, exp| current.pow(exp as _))?;
+        }
+        _ => panic!(),
+    }
 
     Ok(ExecutorState::Ok)
+}
+
+fn simple_math_op<F: FnOnce(Number, Number) -> Number>(
+    args: &Arguments,
+    vars: &mut VariableStorage,
+    op: F,
+) -> Result<(), RuntimeError> {
+    args.check_count_exact(2)?;
+    let ident = args.fetch_nth_as_ident(0).into_parse_err()?;
+    let src = args.fetch_nth_as_any(1).into_parse_err()?;
+    let real_src = pass_or_fetch(vars, &src)?;
+    let value = expect_number(real_src)?;
+
+    single_step(&ident, vars, |current| op(current, value))?;
+    Ok(())
 }
 
 pub fn pass_or_fetch<'a>(
