@@ -1,0 +1,12 @@
+DMP "Enter a start value:"
+RNV start
+DMP "Enter an end value:"
+RNV end
+
+VAR current
+MOV current,start
+
+DMP current
+CMP current,end
+INC current
+JNE -3
