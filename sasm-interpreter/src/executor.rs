@@ -85,6 +85,13 @@ pub fn execute(
 
             vars.set(ident, Expression::Number(num))?;
         }
+        Instruction::ReadStringValue(ident) => {
+            let mut line = String::new();
+            stdin().read_line(&mut line)?;
+
+            line = line.trim_end().to_string();
+            vars.set(ident, Expression::String(line))?;
+        }
         Instruction::Die(code) => exit(*code as i32),
     }
 

@@ -21,5 +21,6 @@ define_instr_names!(
     JEQ,
     JMP,
     RNV,
+    RSV,
     DIE
 );
