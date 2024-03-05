@@ -20,4 +20,6 @@ pub enum ParseError {
     NotEnoughArgs { got: usize, expected: usize },
     #[error("Expected at most {expected} arguments, got {got}")]
     TooManyArgs { got: usize, expected: usize },
+    #[error("Unexpected token: `{0}`")]
+    UnexpectedToken(char),
 }
