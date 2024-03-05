@@ -4,7 +4,7 @@ use sasm_parse::{
     ident::Identifier,
     Instruction,
 };
-use std::process::exit;
+use std::{io::stdin, process::exit};
 
 pub enum ExecutorState {
     Ok,
@@ -74,6 +74,16 @@ pub fn execute(
         }
         Instruction::Jump(offset) => {
             return Ok(ExecutorState::Goto(*offset as isize));
+        }
+        Instruction::ReadNumericValue(ident) => {
+            let mut line = String::new();
+            stdin().read_line(&mut line)?;
+
+            let Ok(num) = line.trim_end().parse::<Number>() else {
+                return Err(RuntimeError::IllegalNumber(line));
+            };
+
+            vars.set(ident, Expression::Number(num))?;
         }
         Instruction::Die(code) => exit(*code as i32),
     }
