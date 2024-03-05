@@ -5,7 +5,7 @@ use crate::{executor::execute, varstorage::VariableStorage};
 
 pub fn start() {
     let mut variables = VariableStorage::new();
-    let mut stdin_reader = stdin().lines();
+    let mut line = String::new();
     let mut cmp_result = false;
 
     println!("SASM Interpreter");
@@ -13,7 +13,9 @@ pub fn start() {
 
     display_prompt();
 
-    while let Some(Ok(line)) = stdin_reader.next() {
+    while stdin().read_line(&mut line).is_ok() {
+        line = line.trim_end().to_string();
+
         if line.is_empty() {
             display_prompt();
             continue;
@@ -35,6 +37,7 @@ pub fn start() {
         }
 
         display_prompt();
+        line.clear();
     }
 }
 
