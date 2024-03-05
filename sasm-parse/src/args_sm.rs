@@ -36,7 +36,9 @@ impl ArgParserStateMachine {
                     expressions.push(Expression::try_from(buffer.as_str())?);
                     buffer.clear();
                 }
-                _ => unreachable!(),
+                other => {
+                    return Err(ParseError::UnexpectedToken(other));
+                }
             }
         }
 

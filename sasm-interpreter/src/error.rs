@@ -1,4 +1,5 @@
 use sasm_parse::ident::Identifier;
+use std::io;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -20,4 +21,8 @@ pub enum RuntimeError {
     },
     #[error("Division by zero")]
     DivisionByZero,
+    #[error("I/O error: {0}")]
+    IoError(#[from] io::Error),
+    #[error("Invalid number value: `{0}`")]
+    IllegalNumber(String),
 }
