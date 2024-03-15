@@ -27,16 +27,8 @@ pub fn execute(
         Instruction::Increment(ident) => single_step(ident, vars, |current| current + 1)?,
         Instruction::Decrement(ident) => single_step(ident, vars, |current| current - 1)?,
         Instruction::Dump(expr) => var_dump(pass_or_fetch_nullable(vars, expr)?),
-        Instruction::Add(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            single_step(ident, vars, |current| current + amount)?;
-        }
-        Instruction::Multiply(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            single_step(ident, vars, |current| current * amount)?;
-        }
+        Instruction::Add(ident, expr) => math_op(vars, ident, expr, Number::wrapping_add)?,
+        Instruction::Multiply(ident, expr) => math_op(vars, ident, expr, Number::wrapping_mul)?,
         Instruction::Divide(ident, expr) => {
             let amount = expect_number(pass_or_fetch(vars, expr)?)?;
 
@@ -51,11 +43,7 @@ pub fn execute(
 
             single_step(ident, vars, |current| current.pow(amount as _))?;
         }
-        Instruction::Subtract(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
-
-            single_step(ident, vars, |current| current - amount)?;
-        }
+        Instruction::Subtract(ident, expr) => math_op(vars, ident, expr, Number::wrapping_sub)?,
         Instruction::Compare(ident, expr) => {
             let first = vars.get_nonnull(ident)?.clone();
             let second = pass_or_fetch(vars, expr)?;
@@ -76,21 +64,16 @@ pub fn execute(
             return Ok(ExecutorState::Goto(*offset as isize));
         }
         Instruction::ReadNumericValue(ident) => {
-            let mut line = String::new();
-            stdin().read_line(&mut line)?;
+            let line = stdin_readline()?;
 
-            let Ok(num) = line.trim_end().parse::<Number>() else {
+            let Ok(num) = line.parse::<Number>() else {
                 return Err(RuntimeError::IllegalNumber(line));
             };
 
             vars.set(ident, Expression::Number(num))?;
         }
         Instruction::ReadStringValue(ident) => {
-            let mut line = String::new();
-            stdin().read_line(&mut line)?;
-
-            line = line.trim_end().to_string();
-            vars.set(ident, Expression::String(line))?;
+            vars.set(ident, Expression::String(stdin_readline()?))?;
         }
         Instruction::GenerateRandomNumber(ident, range_min, range_max) => {
             let mut min = Number::MIN;
@@ -109,6 +92,26 @@ pub fn execute(
     }
 
     Ok(ExecutorState::Ok)
+}
+
+fn stdin_readline() -> Result<String, RuntimeError> {
+    let mut line = String::new();
+    stdin().read_line(&mut line)?;
+
+    line = line.trim_end().to_string();
+    Ok(line)
+}
+
+fn math_op<F: FnOnce(Number, Number) -> Number>(
+    vars: &mut VariableStorage,
+    ident: &Identifier,
+    expr: &Expression,
+    op: F,
+) -> Result<(), RuntimeError> {
+    let amount = expect_number(pass_or_fetch(vars, expr)?)?;
+
+    single_step(ident, vars, |current| op(current, amount))?;
+    Ok(())
 }
 
 pub fn pass_or_fetch<'a>(
