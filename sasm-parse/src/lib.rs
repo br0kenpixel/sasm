@@ -5,9 +5,7 @@ use args_sm::ArgParserStateMachine;
 use error::ParseError;
 use expression::{Expression, Number};
 use ident::Identifier;
-use instr_names::{
-    ADD, CMP, DEC, DIE, DIV, DMP, INC, JEQ, JMP, JNE, MOV, MUL, POW, RNV, RSV, SUB, VAR,
-};
+use instr_names::*;
 
 mod args;
 mod args_sm;
@@ -34,6 +32,7 @@ pub enum Instruction {
     Jump(Number),
     ReadNumericValue(Identifier),
     ReadStringValue(Identifier),
+    GenerateRandomNumber(Identifier, Option<Expression>, Option<Expression>),
     Die(Number),
 }
 
@@ -56,6 +55,7 @@ impl ToString for Instruction {
             Self::Jump(..) => JMP,
             Self::ReadNumericValue(..) => RNV,
             Self::ReadStringValue(..) => RSV,
+            Self::GenerateRandomNumber(..) => RNG,
             Self::Die(..) => DIE,
         }
         .into()
@@ -179,6 +179,24 @@ impl TryFrom<&str> for Instruction {
                 let var = args.fetch_nth_as_ident(0).into_parse_err()?;
 
                 Ok(Self::ReadStringValue(var))
+            }
+            RNG => {
+                args.check_count(1, 2)?;
+
+                let var = args.fetch_nth_as_ident(0).into_parse_err()?;
+
+                if args.len() == 1 {
+                    return Ok(Self::GenerateRandomNumber(var, None, None));
+                }
+
+                let range_min = args.fetch_nth_as_any(1).into_parse_err()?;
+                let range_max = args.fetch_nth_as_any(2).into_parse_err()?;
+
+                Ok(Self::GenerateRandomNumber(
+                    var,
+                    Some(range_min),
+                    Some(range_max),
+                ))
             }
             DIE => {
                 args.check_count(0, 1)?;

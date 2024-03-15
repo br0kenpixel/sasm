@@ -73,6 +73,10 @@ impl Arguments {
             },
         }
     }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
 }
 
 impl<T> ArgFetchResult<T> {

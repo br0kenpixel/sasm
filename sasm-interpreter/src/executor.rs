@@ -92,6 +92,25 @@ pub fn execute(
             line = line.trim_end().to_string();
             vars.set(ident, Expression::String(line))?;
         }
+        Instruction::GenerateRandomNumber(ident, range_min, range_max) => {
+            let mut min = Number::MIN;
+            let mut max = Number::MAX;
+
+            if let Some(range_min) = range_min {
+                let value = expect_number(pass_or_fetch(vars, range_min)?)?;
+                min = value;
+
+                let Some(range_max) = range_max else {
+                    panic!("RNG(.., .., None)");
+                };
+
+                let value = expect_number(pass_or_fetch(vars, range_max)?)?;
+                max = value;
+            }
+
+            let randval = fastrand::i64(min..max);
+            vars.set(ident, Expression::Number(randval))?;
+        }
         Instruction::Die(code) => exit(*code as i32),
     }
 
