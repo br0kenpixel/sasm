@@ -181,7 +181,7 @@ impl TryFrom<&str> for Instruction {
                 Ok(Self::ReadStringValue(var))
             }
             RNG => {
-                args.check_count(1, 2)?;
+                args.check_count(1, 3)?;
 
                 let var = args.fetch_nth_as_ident(0).into_parse_err()?;
 
