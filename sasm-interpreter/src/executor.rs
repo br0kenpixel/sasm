@@ -95,17 +95,11 @@ pub fn execute(
         Instruction::GenerateRandomNumber(ident, range_min, range_max) => {
             let mut min = Number::MIN;
             let mut max = Number::MAX;
+            let range_bounds = range_min.as_ref().zip(range_max.as_ref());
 
-            if let Some(range_min) = range_min {
-                let value = expect_number(pass_or_fetch(vars, range_min)?)?;
-                min = value;
-
-                let Some(range_max) = range_max else {
-                    panic!("RNG(.., .., None)");
-                };
-
-                let value = expect_number(pass_or_fetch(vars, range_max)?)?;
-                max = value;
+            if let Some((range_min, range_max)) = range_bounds {
+                min = expect_number(pass_or_fetch(vars, range_min)?)?;
+                max = expect_number(pass_or_fetch(vars, range_max)?)?;
             }
 
             let randval = fastrand::i64(min..=max);
