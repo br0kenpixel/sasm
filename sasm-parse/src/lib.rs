@@ -1,4 +1,8 @@
-#![allow(clippy::module_name_repetitions)]
+#![allow(
+    clippy::module_name_repetitions,
+    clippy::wildcard_imports,
+    clippy::too_many_lines
+)]
 
 use args::Arguments;
 use args_sm::ArgParserStateMachine;
