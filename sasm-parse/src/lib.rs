@@ -109,14 +109,14 @@ impl TryFrom<&str> for Instruction {
                 Ok(Self::Dump(expr))
             }
             ADD => {
-                args.check_count_exact(1)?;
+                args.check_count_exact(2)?;
                 let var = args.fetch_nth_as_ident(0).into_parse_err()?;
                 let amount = args.fetch_nth_as_any(1).into_parse_err()?;
 
                 Ok(Self::Add(var, amount))
             }
             SUB => {
-                args.check_count_exact(1)?;
+                args.check_count_exact(2)?;
                 let var = args.fetch_nth_as_ident(0).into_parse_err()?;
                 let amount = args.fetch_nth_as_any(1).into_parse_err()?;
 
