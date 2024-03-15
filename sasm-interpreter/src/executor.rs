@@ -108,7 +108,7 @@ pub fn execute(
                 max = value;
             }
 
-            let randval = fastrand::i64(min..max);
+            let randval = fastrand::i64(min..=max);
             vars.set(ident, Expression::Number(randval))?;
         }
         Instruction::Die(code) => exit(*code as i32),
