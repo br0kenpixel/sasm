@@ -37,6 +37,8 @@ pub enum Instruction {
     ReadNumericValue(Identifier),
     ReadStringValue(Identifier),
     GenerateRandomNumber(Identifier, Option<Expression>, Option<Expression>),
+    Push(Identifier, Expression),
+    Pop(Identifier, Option<Identifier>),
     Die(Number),
 }
 
@@ -60,6 +62,8 @@ impl ToString for Instruction {
             Self::ReadNumericValue(..) => RNV,
             Self::ReadStringValue(..) => RSV,
             Self::GenerateRandomNumber(..) => RNG,
+            Self::Push(..) => PSH,
+            Self::Pop(..) => POP,
             Self::Die(..) => DIE,
         }
         .into()
@@ -201,6 +205,20 @@ impl TryFrom<&str> for Instruction {
                     Some(range_min),
                     Some(range_max),
                 ))
+            }
+            PSH => {
+                args.check_count_exact(2)?;
+                let dst = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let src = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Push(dst, src))
+            }
+            POP => {
+                args.check_count(1, 2)?;
+                let what = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let pop_where = args.fetch_nth_as_ident(1).into_optional()?;
+
+                Ok(Self::Pop(what, pop_where))
             }
             DIE => {
                 args.check_count(0, 1)?;

@@ -23,5 +23,7 @@ define_instr_names!(
     RNV,
     RSV,
     RNG,
+    PSH,
+    POP,
     DIE
 );

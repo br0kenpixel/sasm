@@ -48,6 +48,11 @@ impl Expression {
             Self::String(..) => "String",
         }
     }
+
+    #[must_use]
+    pub fn singe_char_string(ch: char) -> Self {
+        Self::String(ch.into())
+    }
 }
 
 impl TryFrom<&str> for Expression {

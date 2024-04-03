@@ -88,6 +88,35 @@ pub fn execute(
             let randval = fastrand::i64(min..=max);
             vars.set(ident, Expression::Number(randval))?;
         }
+        Instruction::Push(ident, src) => {
+            let src = pass_or_fetch(vars, src)?;
+
+            let maybe_str = vars.get_nonnull(ident)?;
+            let Expression::String(string) = maybe_str else {
+                return Err(RuntimeError::MismatchedTypes {
+                    got: maybe_str.type_name(),
+                    expected: "String",
+                });
+            };
+            let mut string = string.clone();
+
+            match src {
+                Expression::String(other) => string.push_str(other),
+                Expression::Number(other) => string.push_str(&other.to_string()),
+                Expression::Identifier(..) => unreachable!(),
+            }
+            vars.set(ident, Expression::String(string))?;
+        }
+        Instruction::Pop(what, dst) => {
+            let mut string = expect_string(vars.get_nonnull(what)?)?;
+            let popped = string.pop();
+
+            if let Some((dst_ident, ch)) = dst.as_ref().zip(popped) {
+                vars.set(dst_ident, Expression::singe_char_string(ch))?;
+            }
+
+            vars.set(what, Expression::String(string))?;
+        }
         Instruction::Die(code) => exit(*code as i32),
     }
 
@@ -158,6 +187,17 @@ const fn expect_number(expr: &Expression) -> Result<Number, RuntimeError> {
     };
 
     Ok(*n)
+}
+
+fn expect_string(expr: &Expression) -> Result<String, RuntimeError> {
+    let Expression::String(s) = expr else {
+        return Err(RuntimeError::MismatchedTypes {
+            got: expr.type_name(),
+            expected: "String",
+        });
+    };
+
+    Ok(s.clone())
 }
 
 fn var_dump(expr: Option<&Expression>) {
