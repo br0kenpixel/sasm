@@ -13,6 +13,9 @@ Variables are partially statically typed. Their type is determined by the first 
 ## Wiki & Guides
 Wiki home page can be found [here](https://github.com/br0kenpixel/sasm/wiki).
 
+## Download and try
+You can download the latest prebuilt binaries from the [releases](https://github.com/br0kenpixel/sasm/releases) page. There's no need to install anything, since all the binaries are statically linked.
+
 ## Syntax
 A single instruction is made up of 2 parts:
 1. The operation
