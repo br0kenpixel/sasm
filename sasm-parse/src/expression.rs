@@ -1,5 +1,5 @@
 use crate::{error::ParseError, ident::Identifier};
-use std::mem;
+use std::{any::Any, mem};
 
 pub type Number = i64;
 pub type Text = String;
@@ -26,6 +26,10 @@ impl ToString for Expression {
 }
 
 impl Expression {
+    pub const NUMBER_TYPE_NAME: &'static str = "Number";
+    pub const STRING_TYPE_NAME: &'static str = "String";
+    pub const IDENT_TYPE_NAME: &'static str = "Identifier";
+
     #[must_use]
     pub fn into_ident(self) -> Option<Identifier> {
         if let Self::Identifier(ident) = self {
@@ -43,15 +47,24 @@ impl Expression {
     #[must_use]
     pub const fn type_name(&self) -> &'static str {
         match self {
-            Self::Identifier(..) => "Identifier",
-            Self::Number(..) => "Number",
-            Self::String(..) => "String",
+            Self::Identifier(..) => Self::IDENT_TYPE_NAME,
+            Self::Number(..) => Self::NUMBER_TYPE_NAME,
+            Self::String(..) => Self::STRING_TYPE_NAME,
         }
     }
 
     #[must_use]
     pub fn singe_char_string(ch: char) -> Self {
         Self::String(ch.into())
+    }
+
+    #[must_use]
+    pub fn inner_as_any(self) -> Box<dyn Any> {
+        match self {
+            Self::Identifier(ident) => Box::new(ident),
+            Self::Number(num) => Box::new(num),
+            Self::String(string) => Box::new(string),
+        }
     }
 }
 

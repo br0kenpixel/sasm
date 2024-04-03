@@ -1,7 +1,8 @@
 use crate::{error::RuntimeError, varstorage::VariableStorage};
 use sasm_parse::{
-    expression::{Expression, Number},
+    expression::{Expression, Number, Text},
     ident::Identifier,
+    type_trait::SasmType,
     Instruction,
 };
 use std::{io::stdin, process::exit};
@@ -30,7 +31,7 @@ pub fn execute(
         Instruction::Add(ident, expr) => math_op(vars, ident, expr, Number::wrapping_add)?,
         Instruction::Multiply(ident, expr) => math_op(vars, ident, expr, Number::wrapping_mul)?,
         Instruction::Divide(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
+            let amount = expect::<Number>(pass_or_fetch(vars, expr)?)?;
 
             if amount == 0 {
                 return Err(RuntimeError::DivisionByZero);
@@ -39,7 +40,7 @@ pub fn execute(
             single_step(ident, vars, |current| current / amount)?;
         }
         Instruction::Power(ident, expr) => {
-            let amount = expect_number(pass_or_fetch(vars, expr)?)?;
+            let amount = expect::<Number>(pass_or_fetch(vars, expr)?)?;
 
             single_step(ident, vars, |current| current.pow(amount as _))?;
         }
@@ -81,8 +82,8 @@ pub fn execute(
             let range_bounds = range_min.as_ref().zip(range_max.as_ref());
 
             if let Some((range_min, range_max)) = range_bounds {
-                min = expect_number(pass_or_fetch(vars, range_min)?)?;
-                max = expect_number(pass_or_fetch(vars, range_max)?)?;
+                min = expect(pass_or_fetch(vars, range_min)?)?;
+                max = expect(pass_or_fetch(vars, range_max)?)?;
             }
 
             let randval = fastrand::i64(min..=max);
@@ -91,14 +92,7 @@ pub fn execute(
         Instruction::Push(ident, src) => {
             let src = pass_or_fetch(vars, src)?;
 
-            let maybe_str = vars.get_nonnull(ident)?;
-            let Expression::String(string) = maybe_str else {
-                return Err(RuntimeError::MismatchedTypes {
-                    got: maybe_str.type_name(),
-                    expected: "String",
-                });
-            };
-            let mut string = string.clone();
+            let mut string = expect::<Text>(vars.get_nonnull(ident)?)?;
 
             match src {
                 Expression::String(other) => string.push_str(other),
@@ -108,7 +102,7 @@ pub fn execute(
             vars.set(ident, Expression::String(string))?;
         }
         Instruction::Pop(what, dst) => {
-            let mut string = expect_string(vars.get_nonnull(what)?)?;
+            let mut string = expect::<Text>(vars.get_nonnull(what)?)?;
             let popped = string.pop();
 
             if let Some((dst_ident, ch)) = dst.as_ref().zip(popped) {
@@ -137,7 +131,7 @@ fn math_op<F: FnOnce(Number, Number) -> Number>(
     expr: &Expression,
     op: F,
 ) -> Result<(), RuntimeError> {
-    let amount = expect_number(pass_or_fetch(vars, expr)?)?;
+    let amount = expect(pass_or_fetch(vars, expr)?)?;
 
     single_step(ident, vars, |current| op(current, amount))?;
     Ok(())
@@ -178,26 +172,18 @@ fn single_step<F: FnOnce(Number) -> Number>(
     Ok(())
 }
 
-const fn expect_number(expr: &Expression) -> Result<Number, RuntimeError> {
-    let Expression::Number(n) = expr else {
-        return Err(RuntimeError::MismatchedTypes {
-            got: expr.type_name(),
-            expected: "Number",
-        });
-    };
+fn expect<T: SasmType + 'static>(expr: &Expression) -> Result<T, RuntimeError> {
+    let got_type_name = expr.type_name();
+    let any = expr.clone().inner_as_any();
 
-    Ok(*n)
-}
+    let res = any
+        .downcast::<T>()
+        .map_err(|_| RuntimeError::MismatchedTypes {
+            got: got_type_name,
+            expected: T::type_name(),
+        })?;
 
-fn expect_string(expr: &Expression) -> Result<String, RuntimeError> {
-    let Expression::String(s) = expr else {
-        return Err(RuntimeError::MismatchedTypes {
-            got: expr.type_name(),
-            expected: "String",
-        });
-    };
-
-    Ok(s.clone())
+    Ok(*res)
 }
 
 fn var_dump(expr: Option<&Expression>) {
