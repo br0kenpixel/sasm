@@ -17,6 +17,7 @@ pub mod error;
 pub mod expression;
 pub mod ident;
 mod instr_names;
+pub mod type_trait;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Instruction {
