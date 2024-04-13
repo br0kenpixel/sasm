@@ -6,7 +6,7 @@ use thiserror::Error;
 pub enum RuntimeError {
     #[error("Illegal jump to line {0}")]
     IllegalGoto(usize),
-    #[error("Undefined variable {0:?}")]
+    #[error("Undefined variable '{0}'")]
     UndefinedVar(Identifier),
     #[error("Duplicate variable definitions for '{0:?}'")]
     DuplicateVarDef(Identifier),
