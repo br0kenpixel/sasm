@@ -7,7 +7,7 @@
 use args::Arguments;
 use args_sm::ArgParserStateMachine;
 use error::ParseError;
-use expression::{Expression, Number};
+use expression::{Expression, Number, Text};
 use ident::Identifier;
 use instr_names::*;
 
@@ -40,6 +40,8 @@ pub enum Instruction {
     GenerateRandomNumber(Identifier, Option<Expression>, Option<Expression>),
     Push(Identifier, Expression),
     Pop(Identifier, Option<Identifier>),
+    Format(Identifier, Text),
+    Print(Expression),
     Die(Number),
 }
 
@@ -65,6 +67,8 @@ impl ToString for Instruction {
             Self::GenerateRandomNumber(..) => RNG,
             Self::Push(..) => PSH,
             Self::Pop(..) => POP,
+            Self::Format(..) => FMT,
+            Self::Print(..) => SAY,
             Self::Die(..) => DIE,
         }
         .into()
@@ -220,6 +224,19 @@ impl TryFrom<&str> for Instruction {
                 let pop_where = args.fetch_nth_as_ident(1).into_optional()?;
 
                 Ok(Self::Pop(what, pop_where))
+            }
+            FMT => {
+                args.check_count_exact(2)?;
+                let dst = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let fmt_text = args.fetch_nth::<Text>(1)?;
+
+                Ok(Self::Format(dst, fmt_text))
+            }
+            SAY => {
+                args.check_count_exact(1)?;
+                let what = args.fetch_nth_as_any(0).into_parse_err()?;
+
+                Ok(Self::Print(what))
             }
             DIE => {
                 args.check_count(0, 1)?;

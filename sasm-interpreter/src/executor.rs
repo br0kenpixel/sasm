@@ -1,4 +1,4 @@
-use crate::{error::RuntimeError, varstorage::VariableStorage};
+use crate::{error::RuntimeError, formatter::format, varstorage::VariableStorage};
 use sasm_parse::{
     expression::{Expression, Number, Text},
     ident::Identifier,
@@ -110,6 +110,15 @@ pub fn execute(
             }
 
             vars.set(what, Expression::String(string))?;
+        }
+        Instruction::Print(what) => match what {
+            Expression::Identifier(..) => panic!("Attempted to print an identifier"),
+            Expression::Number(n) => println!("{n}"),
+            Expression::String(text) => print!("{text}"),
+        },
+        Instruction::Format(dst, fmt) => {
+            let formatted = format(fmt, vars)?;
+            vars.set(dst, Expression::String(formatted))?;
         }
         Instruction::Die(code) => exit(*code as i32),
     }

@@ -2,6 +2,7 @@ use crate::{
     error::ParseError,
     expression::{Expression, Number},
     ident::Identifier,
+    type_trait::SasmType,
 };
 
 pub enum ArgFetchResult<T> {
@@ -71,6 +72,21 @@ impl Arguments {
                 got: invalid.to_string(),
                 expected: "Number".into(),
             },
+        }
+    }
+
+    pub fn fetch_nth<T: SasmType + 'static>(&self, n: usize) -> Result<T, ParseError> {
+        let inner_exp = self.fetch_nth_as_any(n).into_parse_err()?;
+        let inner_type = inner_exp.type_name();
+        let inner_value = inner_exp.inner_as_any();
+        let downcast = inner_value.downcast::<T>();
+
+        match downcast {
+            Ok(value) => Ok(*value),
+            Err(_) => Err(ParseError::MismatchedTypes {
+                got: inner_type.into(),
+                expected: T::type_name().into(),
+            }),
         }
     }
 

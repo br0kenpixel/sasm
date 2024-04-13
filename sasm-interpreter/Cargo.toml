@@ -7,3 +7,4 @@ edition = "2021"
 fastrand = "2.0.1"
 sasm-parse = { path = "../sasm-parse" }
 thiserror = "1.0.57"
+regex = "1.10.4"

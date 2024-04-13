@@ -25,5 +25,7 @@ define_instr_names!(
     RNG,
     PSH,
     POP,
+    FMT,
+    SAY,
     DIE
 );

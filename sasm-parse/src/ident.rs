@@ -1,4 +1,5 @@
 use crate::error::ParseError;
+use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Identifier(String);
@@ -27,5 +28,11 @@ impl TryFrom<&str> for Identifier {
         }
 
         Ok(Self(value.into()))
+    }
+}
+
+impl Display for Identifier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
     }
 }

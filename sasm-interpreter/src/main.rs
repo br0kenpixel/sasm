@@ -9,6 +9,7 @@ use std::{env, fs};
 
 mod error;
 mod executor;
+mod formatter;
 mod repl_runner;
 mod script_runner;
 mod varstorage;

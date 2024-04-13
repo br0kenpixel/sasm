@@ -1,0 +1,9 @@
+VAR x
+VAR y
+VAR z
+
+MOV x,1
+MOV y,"fox"
+FMT z,"The number is {x}, and the word is {y}."
+
+DMP z
