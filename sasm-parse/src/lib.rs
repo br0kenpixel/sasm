@@ -20,29 +20,54 @@ pub mod ident;
 mod instr_names;
 pub mod type_trait;
 
+/// An executable operation that can be executed by an interpreter.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Instruction {
+    /// Defines a variable with the given name.
     CreateVariable(Identifier),
+    /// Moves a value to a variable.
     Move(Identifier, Expression),
+    /// Increments a variable containing a number.
     Increment(Identifier),
+    /// Decrements a variable containing a number.
     Decrement(Identifier),
+    /// Dumps the value of the given variable to `stdout`.
     Dump(Expression),
+    /// Performes mathematical addition on the given variable with the given operand.
     Add(Identifier, Expression),
+    /// Performes mathematical subtraction on the given variable with the given [subtrahend](https://www.dictionary.com/browse/subtrahend).
     Subtract(Identifier, Expression),
+    /// Performes mathematical multiplication on the given variable with the given multiplier.
     Multiply(Identifier, Expression),
+    /// Performes mathematical division on the given variable with the given divisor.
     Divide(Identifier, Expression),
+    /// Performes mathematical exponentiation on the given variable with the given exponent.
     Power(Identifier, Expression),
+    /// Compares the value inside the given variable with an expression (possibly another variable).
+    /// The result of this comparion is saved by the interpreter into some internal variable.
     Compare(Identifier, Expression),
+    /// Skips a given number of instructions if the last comparison was `true`.
     JumpEqual(Number),
+    /// Skips a given number of instructions if the last comparison was `false`.
     JumpNotEqual(Number),
+    /// Skips a given number of instructions.
     Jump(Number),
+    /// Reads a number from `stdin` and saves it into the given variable.
     ReadNumericValue(Identifier),
+    /// Reads a line from `stdin` and saves it into the given variable.
     ReadStringValue(Identifier),
+    /// Writes a random number into the given variable. Optionally, a _minimum_ and _maximum_ range can be specified.
     GenerateRandomNumber(Identifier, Option<Expression>, Option<Expression>),
+    /// Pushes a string (or a string inside another variable) into the given variable.
     Push(Identifier, Expression),
+    /// Pops a single character from a string inside the given variable.
+    /// Optionally you can specify another variable, which will contain the popped character as a single character string.
     Pop(Identifier, Option<Identifier>),
+    /// Writes a formatted string into a varible. The format string uses the same syntax as Rust's [`format!()`].
     Format(Identifier, Text),
+    /// Writes an expression to `stdout` **without newline**.
     Print(Expression),
+    /// Exits the program with the given exit code.
     Die(Number),
 }
 

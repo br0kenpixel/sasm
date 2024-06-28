@@ -8,10 +8,14 @@ use std::{
 pub type Number = i64;
 pub type Text = String;
 
+/// An expression.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Expression {
+    /// A 64-bit signed integer [`i64`].
     Number(Number),
+    /// A dynamically-allocated string of characters.
     String(Text),
+    /// An identifier
     Identifier(Identifier),
 }
 

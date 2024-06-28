@@ -1,6 +1,7 @@
 use crate::error::ParseError;
 use std::fmt::Display;
 
+/// An identifier (variable name).
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Identifier(String);
 
@@ -10,6 +11,7 @@ impl Identifier {
         Self(name.as_ref().into())
     }
 
+    /// Returns the identifier name as a string slice.
     #[must_use]
     pub fn name(&self) -> &str {
         &self.0
