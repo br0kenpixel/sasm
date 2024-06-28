@@ -81,13 +81,15 @@ impl Arguments {
         let inner_value = inner_exp.inner_as_any();
         let downcast = inner_value.downcast::<T>();
 
-        match downcast {
-            Ok(value) => Ok(*value),
-            Err(_) => Err(ParseError::MismatchedTypes {
-                got: inner_type.into(),
-                expected: T::type_name().into(),
-            }),
-        }
+        downcast.map_or_else(
+            |_| {
+                Err(ParseError::MismatchedTypes {
+                    got: inner_type.into(),
+                    expected: T::type_name().into(),
+                })
+            },
+            |value| Ok(*value),
+        )
     }
 
     pub fn len(&self) -> usize {
