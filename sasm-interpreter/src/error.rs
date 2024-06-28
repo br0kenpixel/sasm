@@ -8,7 +8,7 @@ pub enum RuntimeError {
     IllegalGoto(usize),
     #[error("Undefined variable '{0}'")]
     UndefinedVar(Identifier),
-    #[error("Duplicate variable definitions for '{0:?}'")]
+    #[error("Variable '{}' has already been defined", (.0).name())]
     DuplicateVarDef(Identifier),
     #[error("Variable does not have a value")]
     NullDeref,
