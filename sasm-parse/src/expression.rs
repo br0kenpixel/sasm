@@ -1,5 +1,9 @@
 use crate::{error::ParseError, ident::Identifier};
-use std::{any::Any, mem};
+use std::{
+    any::Any,
+    fmt::{self, Display},
+    mem,
+};
 
 pub type Number = i64;
 pub type Text = String;
@@ -11,17 +15,15 @@ pub enum Expression {
     Identifier(Identifier),
 }
 
-impl ToString for Expression {
-    fn to_string(&self) -> String {
-        let mut buf = self.type_name().to_string();
+impl Display for Expression {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.type_name())?;
 
         match self {
-            Self::Identifier(ident) => buf.push_str(&format!("<'{}'>", ident.name())),
-            Self::Number(num) => buf.push_str(&format!("<{num}>")),
-            Self::String(text) => buf.push_str(&format!("<'{text}'>")),
+            Self::Identifier(ident) => write!(f, "<'{}'>", ident.name()),
+            Self::Number(num) => write!(f, "<{num}>"),
+            Self::String(text) => write!(f, "<'{text}'>"),
         }
-
-        buf
     }
 }
 

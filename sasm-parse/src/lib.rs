@@ -10,6 +10,7 @@ use error::ParseError;
 use expression::{Expression, Number, Text};
 use ident::Identifier;
 use instr_names::*;
+use std::fmt::{self, Display};
 
 mod args;
 mod args_sm;
@@ -45,33 +46,32 @@ pub enum Instruction {
     Die(Number),
 }
 
-impl ToString for Instruction {
-    fn to_string(&self) -> String {
+impl Display for Instruction {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::CreateVariable(..) => VAR,
-            Self::Move(..) => MOV,
-            Self::Increment(..) => INC,
-            Self::Decrement(..) => DEC,
-            Self::Dump(..) => DMP,
-            Self::Add(..) => ADD,
-            Self::Subtract(..) => SUB,
-            Self::Multiply(..) => MUL,
-            Self::Divide(..) => DIV,
-            Self::Power(..) => POW,
-            Self::Compare(..) => CMP,
-            Self::JumpEqual(..) => JEQ,
-            Self::JumpNotEqual(..) => JNE,
-            Self::Jump(..) => JMP,
-            Self::ReadNumericValue(..) => RNV,
-            Self::ReadStringValue(..) => RSV,
-            Self::GenerateRandomNumber(..) => RNG,
-            Self::Push(..) => PSH,
-            Self::Pop(..) => POP,
-            Self::Format(..) => FMT,
-            Self::Print(..) => SAY,
-            Self::Die(..) => DIE,
+            Self::CreateVariable(..) => write!(f, "{VAR}"),
+            Self::Move(..) => write!(f, "{MOV}"),
+            Self::Increment(..) => write!(f, "{INC}"),
+            Self::Decrement(..) => write!(f, "{DEC}"),
+            Self::Dump(..) => write!(f, "{DMP}"),
+            Self::Add(..) => write!(f, "{ADD}"),
+            Self::Subtract(..) => write!(f, "{SUB}"),
+            Self::Multiply(..) => write!(f, "{MUL}"),
+            Self::Divide(..) => write!(f, "{DIV}"),
+            Self::Power(..) => write!(f, "{POW}"),
+            Self::Compare(..) => write!(f, "{CMP}"),
+            Self::JumpEqual(..) => write!(f, "{JEQ}"),
+            Self::JumpNotEqual(..) => write!(f, "{JNE}"),
+            Self::Jump(..) => write!(f, "{JMP}"),
+            Self::ReadNumericValue(..) => write!(f, "{RNV}"),
+            Self::ReadStringValue(..) => write!(f, "{RSV}"),
+            Self::GenerateRandomNumber(..) => write!(f, "{RNG}"),
+            Self::Push(..) => write!(f, "{PSH}"),
+            Self::Pop(..) => write!(f, "{POP}"),
+            Self::Format(..) => write!(f, "{FMT}"),
+            Self::Print(..) => write!(f, "{SAY}"),
+            Self::Die(..) => write!(f, "{DIE}"),
         }
-        .into()
     }
 }
 

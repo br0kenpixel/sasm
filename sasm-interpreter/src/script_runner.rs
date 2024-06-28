@@ -37,6 +37,6 @@ pub fn start(cmds: &[Instruction]) {
 
 fn report_runtime_err(exec_pos: usize, instr: &Instruction, err: &RuntimeError) {
     eprintln!("Runtime error on line {}:", exec_pos + 1);
-    eprintln!("\t-> {}", instr.to_string());
+    eprintln!("\t-> {instr}");
     eprintln!("\t|- {err}");
 }
