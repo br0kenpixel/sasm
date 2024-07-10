@@ -1,0 +1,19 @@
+DMP "A number between 1 and 10 will be randomly generated. You have to guess it."
+DMP "Type -1 to exit."
+
+VAR secret
+VAR input
+RNG secret,1,10
+
+SAY "Enter your guess: "
+RNV input
+CMP input,-1
+JEQ 6
+CMP input,secret
+JEQ 3
+DMP "Incorrect! Try again..."
+JMP -7
+
+DMP "Correct! Congrats!"
+
+DIE

@@ -1,0 +1,30 @@
+DMP "A number between 1 and 10 will be randomly generated. You have to guess it. You only get 3 attempts!"
+DMP "Type -1 to exit."
+
+VAR secret
+VAR input
+VAR guess
+VAR maxguess
+
+RNG secret,1,10
+MOV guess,0
+MOV maxguess,3
+
+CMP guess,maxguess
+JEQ 12
+SAY "Enter your guess: "
+RNV input
+INC guess
+CMP input,-1
+JEQ 6
+CMP input,secret
+JEQ 3
+DMP "Incorrect! Try again..."
+JMP -10
+
+DMP "Correct! Congrats!"
+JMP 2
+
+DMP "Too many guesses!"
+
+DIE
