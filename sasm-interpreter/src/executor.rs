@@ -5,7 +5,7 @@ use sasm_parse::{
     type_trait::SasmType,
     Instruction,
 };
-use std::{io::stdin, process::exit};
+use std::{io::stdin, process::exit, thread::sleep, time::Duration};
 
 pub enum ExecutorState {
     Ok,
@@ -119,6 +119,10 @@ pub fn execute(
         Instruction::Format(dst, fmt) => {
             let formatted = format(fmt, vars)?;
             vars.set(dst, Expression::String(formatted))?;
+        }
+        Instruction::Sleep(time_expr) => {
+            let ms = expect::<Number>(pass_or_fetch(vars, time_expr)?)?;
+            sleep(Duration::from_millis(ms.try_into()?));
         }
         Instruction::Delete(ident) => {
             vars.delete(ident)?;
