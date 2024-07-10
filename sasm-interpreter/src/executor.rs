@@ -120,6 +120,17 @@ pub fn execute(
             let formatted = format(fmt, vars)?;
             vars.set(dst, Expression::String(formatted))?;
         }
+        Instruction::Length(dst, obj) => {
+            let value = pass_or_fetch(vars, obj)?;
+
+            match value {
+                Expression::Identifier(..) => unreachable!("LEN cannot be used with identifiers"),
+                Expression::Number(..) => return Err(RuntimeError::UnsizedObj(value.type_name())),
+                Expression::String(s) => {
+                    vars.set(dst, Expression::Number(s.len().try_into()?))?;
+                }
+            }
+        }
         Instruction::Clear(what) => {
             let expr = vars.get_nonnull(what)?;
 

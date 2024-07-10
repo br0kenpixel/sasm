@@ -71,6 +71,8 @@ pub enum Instruction {
     /// For numbers, it just sets them back to 0.
     /// For strings, it clears them - turning them into an empty string.
     Clear(Identifier),
+    /// Calculates the length of an array-like object (eg. strings) and saves it into the given variable.
+    Length(Identifier, Expression),
     /// Stops execution for a given amount of time _(milliseconds)_.
     Sleep(Expression),
     /// Delete the variable and deallocate the contained data.
@@ -103,6 +105,7 @@ impl Display for Instruction {
             Self::Pop(..) => write!(f, "{POP}"),
             Self::Format(..) => write!(f, "{FMT}"),
             Self::Print(..) => write!(f, "{SAY}"),
+            Self::Length(..) => write!(f, "{LEN}"),
             Self::Clear(..) => write!(f, "{CLR}"),
             Self::Sleep(..) => write!(f, "{HLT}"),
             Self::Delete(..) => write!(f, "{DEL}"),
@@ -273,6 +276,13 @@ impl TryFrom<&str> for Instruction {
                 let what = args.fetch_nth_as_any(0).into_parse_err()?;
 
                 Ok(Self::Print(what))
+            }
+            LEN => {
+                args.check_count_exact(2)?;
+                let dst = args.fetch_nth_as_ident(0).into_parse_err()?;
+                let what = args.fetch_nth_as_any(1).into_parse_err()?;
+
+                Ok(Self::Length(dst, what))
             }
             CLR => {
                 args.check_count_exact(1)?;

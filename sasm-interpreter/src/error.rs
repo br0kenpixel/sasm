@@ -21,6 +21,8 @@ pub enum RuntimeError {
     },
     #[error("Division by zero")]
     DivisionByZero,
+    #[error("Expected array-like object, got {0}")]
+    UnsizedObj(&'static str),
     #[error("Failed to convert number types")]
     IntConversion(#[from] TryFromIntError),
     #[error("I/O error: {0}")]
