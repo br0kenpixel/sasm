@@ -5,7 +5,12 @@ use sasm_parse::{
     type_trait::SasmType,
     Instruction,
 };
-use std::{io::stdin, process::exit, thread::sleep, time::Duration};
+use std::{
+    io::{stdin, stdout, Write},
+    process::exit,
+    thread::sleep,
+    time::Duration,
+};
 
 pub enum ExecutorState {
     Ok,
@@ -112,11 +117,15 @@ pub fn execute(
 
             vars.set(what, Expression::String(string))?;
         }
-        Instruction::Print(what) => match what {
-            Expression::Identifier(..) => panic!("Attempted to print an identifier"),
-            Expression::Number(n) => println!("{n}"),
-            Expression::String(text) => print!("{text}"),
-        },
+        Instruction::Print(what) => {
+            match what {
+                Expression::Identifier(..) => panic!("Attempted to print an identifier"),
+                Expression::Number(n) => println!("{n}"),
+                Expression::String(text) => print!("{text}"),
+            }
+
+            stdout().flush()?;
+        }
         Instruction::Format(dst, fmt) => {
             let formatted = format(fmt, vars)?;
             vars.set(dst, Expression::String(formatted))?;
