@@ -120,6 +120,9 @@ pub fn execute(
             let formatted = format(fmt, vars)?;
             vars.set(dst, Expression::String(formatted))?;
         }
+        Instruction::Delete(ident) => {
+            vars.delete(ident)?;
+        }
         Instruction::Die(code) => exit(*code as i32),
     }
 

@@ -67,6 +67,8 @@ pub enum Instruction {
     Format(Identifier, Text),
     /// Writes an expression to `stdout` **without newline**.
     Print(Expression),
+    /// Delete the variable and deallocate the contained data.
+    Delete(Identifier),
     /// Exits the program with the given exit code.
     Die(Number),
 }
@@ -95,6 +97,7 @@ impl Display for Instruction {
             Self::Pop(..) => write!(f, "{POP}"),
             Self::Format(..) => write!(f, "{FMT}"),
             Self::Print(..) => write!(f, "{SAY}"),
+            Self::Delete(..) => write!(f, "{DEL}"),
             Self::Die(..) => write!(f, "{DIE}"),
         }
     }
@@ -262,6 +265,12 @@ impl TryFrom<&str> for Instruction {
                 let what = args.fetch_nth_as_any(0).into_parse_err()?;
 
                 Ok(Self::Print(what))
+            }
+            DEL => {
+                args.check_count_exact(1)?;
+                let what = args.fetch_nth_as_ident(0).into_parse_err()?;
+
+                Ok(Self::Delete(what))
             }
             DIE => {
                 args.check_count(0, 1)?;

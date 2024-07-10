@@ -27,5 +27,6 @@ define_instr_names!(
     POP,
     FMT,
     SAY,
+    DEL,
     DIE
 );

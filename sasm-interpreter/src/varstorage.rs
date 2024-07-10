@@ -47,6 +47,13 @@ impl VariableStorage {
         }
     }
 
+    pub fn delete(&mut self, ident: &Identifier) -> Result<(), RuntimeError> {
+        let _ = self.get(ident)?;
+        self.0.remove(ident);
+
+        Ok(())
+    }
+
     fn replace(&mut self, ident: &Identifier, value: Expression) -> Result<(), RuntimeError> {
         let current = self.get(ident).unwrap();
 
