@@ -67,6 +67,10 @@ pub enum Instruction {
     Format(Identifier, Text),
     /// Writes an expression to `stdout` **without newline**.
     Print(Expression),
+    /// Resets a variable's value to it's default.
+    /// For numbers, it just sets them back to 0.
+    /// For strings, it clears them - turning them into an empty string.
+    Clear(Identifier),
     /// Stops execution for a given amount of time _(milliseconds)_.
     Sleep(Expression),
     /// Delete the variable and deallocate the contained data.
@@ -99,6 +103,7 @@ impl Display for Instruction {
             Self::Pop(..) => write!(f, "{POP}"),
             Self::Format(..) => write!(f, "{FMT}"),
             Self::Print(..) => write!(f, "{SAY}"),
+            Self::Clear(..) => write!(f, "{CLR}"),
             Self::Sleep(..) => write!(f, "{HLT}"),
             Self::Delete(..) => write!(f, "{DEL}"),
             Self::Die(..) => write!(f, "{DIE}"),
@@ -268,6 +273,12 @@ impl TryFrom<&str> for Instruction {
                 let what = args.fetch_nth_as_any(0).into_parse_err()?;
 
                 Ok(Self::Print(what))
+            }
+            CLR => {
+                args.check_count_exact(1)?;
+                let what = args.fetch_nth_as_ident(0).into_parse_err()?;
+
+                Ok(Self::Clear(what))
             }
             HLT => {
                 args.check_count_exact(1)?;

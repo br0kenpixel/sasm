@@ -120,6 +120,19 @@ pub fn execute(
             let formatted = format(fmt, vars)?;
             vars.set(dst, Expression::String(formatted))?;
         }
+        Instruction::Clear(what) => {
+            let expr = vars.get_nonnull(what)?;
+
+            match expr {
+                Expression::Identifier(..) => unreachable!("CLR cannot be used with identifiers"),
+                Expression::Number(..) => {
+                    vars.set(what, Expression::Number(Number::default()))?;
+                }
+                Expression::String(..) => {
+                    vars.set(what, Expression::String(String::default()))?;
+                }
+            }
+        }
         Instruction::Sleep(time_expr) => {
             let ms = expect::<Number>(pass_or_fetch(vars, time_expr)?)?;
             sleep(Duration::from_millis(ms.try_into()?));

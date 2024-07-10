@@ -27,6 +27,7 @@ define_instr_names!(
     POP,
     FMT,
     SAY,
+    CLR,
     HLT,
     DEL,
     DIE
