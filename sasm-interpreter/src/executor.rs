@@ -12,6 +12,7 @@ pub enum ExecutorState {
     Goto(isize),
 }
 
+#[allow(clippy::too_many_lines)]
 pub fn execute(
     instr: &Instruction,
     vars: &mut VariableStorage,
