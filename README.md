@@ -7,6 +7,7 @@ SASM uses "instructions" to perform operations. Each instruction is a single lin
 SASM implements the following data types:
 - Numbers
 - Strings
+- Floats
 
 Variables are partially statically typed. Their type is determined by the first value assigned to them. Once a variable is assigned a value, it's type cannot be changed.
 

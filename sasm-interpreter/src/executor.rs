@@ -97,12 +97,12 @@ pub fn execute(
         }
         Instruction::Push(ident, src) => {
             let src = pass_or_fetch(vars, src)?;
-
             let mut string = expect::<Text>(vars.get_nonnull(ident)?)?;
 
             match src {
                 Expression::String(other) => string.push_str(other),
                 Expression::Number(other) => string.push_str(&other.to_string()),
+                Expression::Float(other) => string.push_str(&other.to_string()),
                 Expression::Identifier(..) => unreachable!(),
             }
             vars.set(ident, Expression::String(string))?;
@@ -121,6 +121,7 @@ pub fn execute(
             match what {
                 Expression::Identifier(..) => panic!("Attempted to print an identifier"),
                 Expression::Number(n) => println!("{n}"),
+                Expression::Float(v) => println!("{v}"),
                 Expression::String(text) => print!("{text}"),
             }
 
@@ -135,7 +136,9 @@ pub fn execute(
 
             match value {
                 Expression::Identifier(..) => unreachable!("LEN cannot be used with identifiers"),
-                Expression::Number(..) => return Err(RuntimeError::UnsizedObj(value.type_name())),
+                Expression::Number(..) | Expression::Float(..) => {
+                    return Err(RuntimeError::UnsizedObj(value.type_name()))
+                }
                 Expression::String(s) => {
                     vars.set(dst, Expression::Number(s.len().try_into()?))?;
                 }
@@ -151,6 +154,9 @@ pub fn execute(
                 }
                 Expression::String(..) => {
                     vars.set(what, Expression::String(String::default()))?;
+                }
+                Expression::Float(..) => {
+                    vars.set(what, Expression::Float(0.))?;
                 }
             }
         }
@@ -241,6 +247,7 @@ fn var_dump(expr: Option<&Expression>) {
         None => println!("null"),
         Some(Expression::Number(n)) => println!("{n}"),
         Some(Expression::String(s)) => println!("{s}"),
+        Some(Expression::Float(v)) => println!("{v}"),
         Some(Expression::Identifier(..)) => unreachable!(),
     }
 }

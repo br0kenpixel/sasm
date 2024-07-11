@@ -21,7 +21,7 @@ mod instr_names;
 pub mod type_trait;
 
 /// An executable operation that can be executed by an interpreter.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub enum Instruction {
     /// Defines a variable with the given name.
     CreateVariable(Identifier),

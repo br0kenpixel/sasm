@@ -12,7 +12,7 @@ impl ArgParserStateMachine {
 
         while let Some(ch) = chars_iter.next() {
             match ch {
-                '-' | '0'..='9' => {
+                '-' | '0'..='9' | '.' => {
                     buffer.push(ch);
 
                     collect_rest(chars_iter.by_ref(), char::is_ascii_digit, &mut buffer);
@@ -155,6 +155,40 @@ mod tests {
                 Expression::Identifier(Identifier::new("pi")),
                 Expression::Number(-3)
             ]
+        );
+    }
+
+    #[test]
+    fn parse_floats() {
+        let parsed = ArgParserStateMachine::parse_args("1.43,3.10,-9.23").unwrap();
+
+        assert_eq!(
+            parsed,
+            vec![
+                Expression::Float(1.43),
+                Expression::Float(3.10),
+                Expression::Float(-9.23)
+            ]
+        );
+    }
+
+    #[test]
+    fn parse_float() {
+        let parsed = ArgParserStateMachine::parse_args("7.5284").unwrap();
+
+        assert_eq!(parsed, vec![Expression::Float(7.5284)]);
+    }
+
+    #[test]
+    fn parse_scientific_floats() {
+        let parsed = ArgParserStateMachine::parse_args("10.13e8,-2.0e9").unwrap();
+
+        assert_eq!(
+            parsed,
+            vec![
+                Expression::Float(1013000000.0),
+                Expression::Float(-2_000_000_000.0)
+            ],
         );
     }
 

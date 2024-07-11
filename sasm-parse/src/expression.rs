@@ -7,14 +7,17 @@ use std::{
 
 pub type Number = i64;
 pub type Text = String;
+pub type Float = f32;
 
 /// An expression.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub enum Expression {
     /// A 64-bit signed integer [`i64`].
     Number(Number),
     /// A dynamically-allocated string of characters.
     String(Text),
+    /// A 32-bit floating point number [`f32`].
+    Float(Float),
     /// An identifier
     Identifier(Identifier),
 }
@@ -27,12 +30,14 @@ impl Display for Expression {
             Self::Identifier(ident) => write!(f, "<'{}'>", ident.name()),
             Self::Number(num) => write!(f, "<{num}>"),
             Self::String(text) => write!(f, "<'{text}'>"),
+            Self::Float(val) => write!(f, "<{val}>"),
         }
     }
 }
 
 impl Expression {
     pub const NUMBER_TYPE_NAME: &'static str = "Number";
+    pub const FLOAT_TYPE_NAME: &'static str = "Number";
     pub const STRING_TYPE_NAME: &'static str = "String";
     pub const IDENT_TYPE_NAME: &'static str = "Identifier";
 
@@ -56,6 +61,7 @@ impl Expression {
             Self::Identifier(..) => Self::IDENT_TYPE_NAME,
             Self::Number(..) => Self::NUMBER_TYPE_NAME,
             Self::String(..) => Self::STRING_TYPE_NAME,
+            Self::Float(..) => Self::FLOAT_TYPE_NAME,
         }
     }
 
@@ -70,6 +76,7 @@ impl Expression {
             Self::Identifier(ident) => Box::new(ident),
             Self::Number(num) => Box::new(num),
             Self::String(string) => Box::new(string),
+            Self::Float(val) => Box::new(val),
         }
     }
 }
@@ -80,6 +87,10 @@ impl TryFrom<&str> for Expression {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         if let Ok(value) = value.parse::<Number>() {
             return Ok(Self::Number(value));
+        }
+
+        if let Ok(value) = value.parse::<Float>() {
+            return Ok(Self::Float(value));
         }
 
         if (value.starts_with('\'') && value.ends_with('\''))
