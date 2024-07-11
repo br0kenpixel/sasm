@@ -81,37 +81,47 @@ pub enum Instruction {
     Die(Number),
 }
 
-impl Display for Instruction {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::CreateVariable(..) => write!(f, "{VAR}"),
-            Self::Move(..) => write!(f, "{MOV}"),
-            Self::Increment(..) => write!(f, "{INC}"),
-            Self::Decrement(..) => write!(f, "{DEC}"),
-            Self::Dump(..) => write!(f, "{DMP}"),
-            Self::Add(..) => write!(f, "{ADD}"),
-            Self::Subtract(..) => write!(f, "{SUB}"),
-            Self::Multiply(..) => write!(f, "{MUL}"),
-            Self::Divide(..) => write!(f, "{DIV}"),
-            Self::Power(..) => write!(f, "{POW}"),
-            Self::Compare(..) => write!(f, "{CMP}"),
-            Self::JumpEqual(..) => write!(f, "{JEQ}"),
-            Self::JumpNotEqual(..) => write!(f, "{JNE}"),
-            Self::Jump(..) => write!(f, "{JMP}"),
-            Self::ReadNumericValue(..) => write!(f, "{RNV}"),
-            Self::ReadStringValue(..) => write!(f, "{RSV}"),
-            Self::GenerateRandomNumber(..) => write!(f, "{RNG}"),
-            Self::Push(..) => write!(f, "{PSH}"),
-            Self::Pop(..) => write!(f, "{POP}"),
-            Self::Format(..) => write!(f, "{FMT}"),
-            Self::Print(..) => write!(f, "{SAY}"),
-            Self::Length(..) => write!(f, "{LEN}"),
-            Self::Clear(..) => write!(f, "{CLR}"),
-            Self::Sleep(..) => write!(f, "{HLT}"),
-            Self::Delete(..) => write!(f, "{DEL}"),
-            Self::Die(..) => write!(f, "{DIE}"),
+macro_rules! impl_display_for_instructions {
+    ($($variant:ident => $var:ident),* $(,)?) => {
+        impl Display for Instruction {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                match self {
+                    $(
+                        Self::$variant(..) => write!(f, "{}", $var),
+                    )*
+                }
+            }
         }
-    }
+    };
+}
+
+impl_display_for_instructions! {
+    CreateVariable => VAR,
+    Move => MOV,
+    Increment => INC,
+    Decrement => DEC,
+    Dump => DMP,
+    Add => ADD,
+    Subtract => SUB,
+    Multiply => MUL,
+    Divide => DIV,
+    Power => POW,
+    Compare => CMP,
+    JumpEqual => JEQ,
+    JumpNotEqual => JNE,
+    Jump => JMP,
+    ReadNumericValue => RNV,
+    ReadStringValue => RSV,
+    GenerateRandomNumber => RNG,
+    Push => PSH,
+    Pop => POP,
+    Format => FMT,
+    Print => SAY,
+    Length => LEN,
+    Clear => CLR,
+    Sleep => HLT,
+    Delete => DEL,
+    Die => DIE,
 }
 
 impl TryFrom<&str> for Instruction {
