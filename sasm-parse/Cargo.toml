@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 itertools = "0.13.0"
 thiserror = "1.0.57"
+sasm-lang-core = { path = "../sasm-lang-core" }

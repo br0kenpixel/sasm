@@ -1,5 +1,5 @@
 [workspace]
-members = ["sasm-interpreter", "sasm-parse"]
+members = ["sasm-interpreter", "sasm-lang-core", "sasm-parse", "sasm-parse-v2"]
 resolver = "2"
 
 [profile.release]

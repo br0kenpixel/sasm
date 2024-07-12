@@ -1,4 +1,5 @@
 use crate::{error::ParseError, ident::Identifier};
+use sasm_lang_core::obj_type::SasmObject;
 use std::{
     any::Any,
     fmt::{self, Display},
@@ -10,35 +11,26 @@ pub type Text = String;
 pub type Float = f32;
 
 /// An expression.
-#[derive(Debug, Clone, PartialEq, PartialOrd)]
+#[derive(Debug)]
 pub enum Expression {
-    /// A 64-bit signed integer [`i64`].
-    Number(Number),
-    /// A dynamically-allocated string of characters.
-    String(Text),
-    /// A 32-bit floating point number [`f32`].
-    Float(Float),
+    /// An object literal
+    ObjectLiteral(SasmObject),
     /// An identifier
     Identifier(Identifier),
 }
 
 impl Display for Expression {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.type_name())?;
-
         match self {
-            Self::Identifier(ident) => write!(f, "<'{}'>", ident.name()),
-            Self::Number(num) => write!(f, "<{num}>"),
-            Self::String(text) => write!(f, "<'{text}'>"),
-            Self::Float(val) => write!(f, "<{val}>"),
+            Self::Identifier(ident) => write!(f, "Identifier<'{}'>", ident.name()),
+            Self::ObjectLiteral(obj) => {
+                write!(f, "{}", obj.to_string().unwrap_or_else(|| obj.repr()))
+            }
         }
     }
 }
 
 impl Expression {
-    pub const NUMBER_TYPE_NAME: &'static str = "Number";
-    pub const FLOAT_TYPE_NAME: &'static str = "Number";
-    pub const STRING_TYPE_NAME: &'static str = "String";
     pub const IDENT_TYPE_NAME: &'static str = "Identifier";
 
     #[must_use]
@@ -59,24 +51,20 @@ impl Expression {
     pub const fn type_name(&self) -> &'static str {
         match self {
             Self::Identifier(..) => Self::IDENT_TYPE_NAME,
-            Self::Number(..) => Self::NUMBER_TYPE_NAME,
-            Self::String(..) => Self::STRING_TYPE_NAME,
-            Self::Float(..) => Self::FLOAT_TYPE_NAME,
+            Self::ObjectLiteral(obj) => obj.kind().name(),
         }
     }
 
     #[must_use]
     pub fn singe_char_string(ch: char) -> Self {
-        Self::String(ch.into())
+        Self::ObjectLiteral(ch.to_string().as_str().into())
     }
 
     #[must_use]
     pub fn inner_as_any(self) -> Box<dyn Any> {
         match self {
             Self::Identifier(ident) => Box::new(ident),
-            Self::Number(num) => Box::new(num),
-            Self::String(string) => Box::new(string),
-            Self::Float(val) => Box::new(val),
+            Self::ObjectLiteral(obj) => Box::new(obj),
         }
     }
 }
