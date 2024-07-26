@@ -2,6 +2,7 @@ use crate::error::RuntimeError;
 use sasm_parse::{expression::Expression, ident::Identifier};
 use std::collections::HashMap;
 
+#[derive(Debug, Default)]
 pub struct VariableStorage(HashMap<Identifier, Option<Expression>>);
 
 impl VariableStorage {
