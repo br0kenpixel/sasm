@@ -1,6 +1,7 @@
 use crate::{
     error::RuntimeError,
     executor::{execute, ExecutorState},
+    fill_internal_vars,
     varstorage::VariableStorage,
 };
 use sasm_parse::Instruction;
@@ -9,6 +10,8 @@ pub fn start(cmds: &[Instruction]) {
     let mut variables = VariableStorage::new();
     let mut exec_pos = 0;
     let mut cmp_result = false;
+
+    fill_internal_vars(&mut variables);
 
     while exec_pos < cmds.len() {
         let instr = &cmds[exec_pos];

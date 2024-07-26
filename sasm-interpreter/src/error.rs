@@ -6,6 +6,8 @@ use thiserror::Error;
 pub enum RuntimeError {
     #[error("Illegal jump to line {0}")]
     IllegalGoto(usize),
+    #[error("Variable '{0}' is internal and read-only")]
+    IllegalWriteInternal(Identifier),
     #[error("Undefined variable '{0}'")]
     UndefinedVar(Identifier),
     #[error("Variable '{}' has already been defined", (.0).name())]

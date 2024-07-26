@@ -39,6 +39,10 @@ impl VariableStorage {
     }
 
     pub fn set(&mut self, ident: &Identifier, value: Expression) -> Result<(), RuntimeError> {
+        if ident.is_internal() {
+            return Err(RuntimeError::IllegalWriteInternal(ident.clone()));
+        }
+
         if self.get(ident).is_ok() {
             self.replace(ident, value)
         } else {
@@ -52,6 +56,16 @@ impl VariableStorage {
         self.0.remove(ident);
 
         Ok(())
+    }
+
+    pub fn set_internal(&mut self, name: &'static str, value: Expression) {
+        let ident = Identifier::try_from(format!("_{name}").as_str()).unwrap();
+
+        if value.type_name() == Expression::IDENT_TYPE_NAME {
+            panic!("internal variable cannot be of type `Identifier`");
+        }
+
+        self.insert(&ident, value);
     }
 
     fn replace(&mut self, ident: &Identifier, value: Expression) -> Result<(), RuntimeError> {

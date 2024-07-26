@@ -4,8 +4,10 @@
     clippy::cast_sign_loss
 )]
 
-use sasm_parse::Instruction;
+use core::f32;
+use sasm_parse::{expression::Expression, Instruction};
 use std::{env, fs};
+use varstorage::VariableStorage;
 
 mod error;
 mod executor;
@@ -50,4 +52,14 @@ fn exec_script(path: &str) {
 
     let commands: Vec<_> = instructions.into_iter().map(Result::unwrap).collect();
     script_runner::start(&commands);
+}
+
+pub fn fill_internal_vars(vars: &mut VariableStorage) {
+    vars.set_internal("PLATFORM", Expression::String("UNSPECIFIED".to_string()));
+    vars.set_internal(
+        "SASMVER",
+        Expression::String(env!("CARGO_PKG_VERSION").to_string()),
+    );
+    vars.set_internal("PI", Expression::Float(f32::consts::PI));
+    vars.set_internal("E", Expression::Float(f32::consts::E));
 }

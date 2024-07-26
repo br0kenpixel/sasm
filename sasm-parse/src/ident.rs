@@ -16,6 +16,10 @@ impl Identifier {
     pub fn name(&self) -> &str {
         &self.0
     }
+
+    pub fn is_internal(&self) -> bool {
+        self.0.starts_with('_')
+    }
 }
 
 impl TryFrom<&str> for Identifier {

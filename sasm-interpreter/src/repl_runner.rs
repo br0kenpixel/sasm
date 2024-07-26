@@ -1,12 +1,13 @@
+use crate::{executor::execute, fill_internal_vars, varstorage::VariableStorage};
 use sasm_parse::Instruction;
 use std::io::{stdin, stdout, Write};
-
-use crate::{executor::execute, varstorage::VariableStorage};
 
 pub fn start() {
     let mut variables = VariableStorage::new();
     let mut line = String::new();
     let mut cmp_result = false;
+
+    fill_internal_vars(&mut variables);
 
     println!("SASM Interpreter");
     println!("v{}\n", env!("CARGO_PKG_VERSION"));
