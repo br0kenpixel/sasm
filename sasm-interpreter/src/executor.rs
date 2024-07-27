@@ -8,6 +8,7 @@ use sasm_parse::{
 use std::{
     io::{stdin, stdout, Write},
     process::exit,
+    rc::Rc,
     thread::sleep,
     time::Duration,
 };
@@ -101,24 +102,26 @@ pub fn execute(
         Instruction::Push(ident, src) => {
             let src = pass_or_fetch(vars, src)?;
             let mut string = expect::<Text>(vars.get_nonnull(ident)?)?;
+            let mutable_string = Rc::make_mut(&mut string);
 
             match src {
-                Expression::String(other) => string.push_str(other),
-                Expression::Number(other) => string.push_str(&other.to_string()),
-                Expression::Float(other) => string.push_str(&other.to_string()),
+                Expression::String(other) => mutable_string.push_str(other),
+                Expression::Number(other) => mutable_string.push_str(&other.to_string()),
+                Expression::Float(other) => mutable_string.push_str(&other.to_string()),
                 Expression::Identifier(..) => unreachable!(),
             }
-            vars.set(ident, Expression::make_string(string))?;
+            vars.set(ident, Expression::rewrap_string(string))?;
         }
         Instruction::Pop(what, dst) => {
             let mut string = expect::<Text>(vars.get_nonnull(what)?)?;
-            let popped = string.pop();
+            let mutable_string = Rc::make_mut(&mut string);
+            let popped = mutable_string.pop();
 
             if let Some((dst_ident, ch)) = dst.as_ref().zip(popped) {
                 vars.set(dst_ident, Expression::singe_char_string(ch))?;
             }
 
-            vars.set(what, Expression::make_string(string))?;
+            vars.set(what, Expression::rewrap_string(string))?;
         }
         Instruction::Print(what) => {
             match what {

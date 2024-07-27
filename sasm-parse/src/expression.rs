@@ -7,7 +7,7 @@ use std::{
 };
 
 pub type Number = i64;
-pub type Text = String;
+pub type Text = Rc<String>;
 pub type Float = f32;
 
 /// An expression.
@@ -16,7 +16,7 @@ pub enum Expression {
     /// A 64-bit signed integer [`i64`].
     Number(Number),
     /// A dynamically-allocated string of characters.
-    String(Rc<Text>),
+    String(Text),
     /// A 32-bit floating point number [`f32`].
     Float(Float),
     /// An identifier
@@ -44,6 +44,10 @@ impl Expression {
 
     pub fn make_string<S: AsRef<str>>(obj: S) -> Self {
         Self::String(Rc::new(obj.as_ref().to_string()))
+    }
+
+    pub fn rewrap_string(rcs: Text) -> Self {
+        Self::String(rcs)
     }
 
     #[must_use]
