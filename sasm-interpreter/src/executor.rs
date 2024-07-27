@@ -83,7 +83,7 @@ pub fn execute(
             vars.set(ident, Expression::Number(num))?;
         }
         Instruction::ReadStringValue(ident) => {
-            vars.set(ident, Expression::String(stdin_readline()?))?;
+            vars.set(ident, Expression::make_string(stdin_readline()?))?;
         }
         Instruction::GenerateRandomNumber(ident, range_min, range_max) => {
             let mut min = Number::MIN;
@@ -108,7 +108,7 @@ pub fn execute(
                 Expression::Float(other) => string.push_str(&other.to_string()),
                 Expression::Identifier(..) => unreachable!(),
             }
-            vars.set(ident, Expression::String(string))?;
+            vars.set(ident, Expression::make_string(string))?;
         }
         Instruction::Pop(what, dst) => {
             let mut string = expect::<Text>(vars.get_nonnull(what)?)?;
@@ -118,7 +118,7 @@ pub fn execute(
                 vars.set(dst_ident, Expression::singe_char_string(ch))?;
             }
 
-            vars.set(what, Expression::String(string))?;
+            vars.set(what, Expression::make_string(string))?;
         }
         Instruction::Print(what) => {
             match what {
@@ -132,7 +132,7 @@ pub fn execute(
         }
         Instruction::Format(dst, fmt) => {
             let formatted = format(fmt, vars)?;
-            vars.set(dst, Expression::String(formatted))?;
+            vars.set(dst, Expression::make_string(formatted))?;
         }
         Instruction::Length(dst, obj) => {
             let value = pass_or_fetch(vars, obj)?;
@@ -156,7 +156,7 @@ pub fn execute(
                     vars.set(what, Expression::Number(Number::default()))?;
                 }
                 Expression::String(..) => {
-                    vars.set(what, Expression::String(String::default()))?;
+                    vars.set(what, Expression::make_string(String::default()))?;
                 }
                 Expression::Float(..) => {
                     vars.set(what, Expression::Float(0.))?;

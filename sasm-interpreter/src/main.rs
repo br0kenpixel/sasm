@@ -55,10 +55,10 @@ fn exec_script(path: &str) {
 }
 
 pub fn fill_internal_vars(vars: &mut VariableStorage) {
-    vars.set_internal("PLATFORM", Expression::String("UNSPECIFIED".to_string()));
+    vars.set_internal("PLATFORM", Expression::make_string("UNSPECIFIED"));
     vars.set_internal(
         "SASMVER",
-        Expression::String(env!("CARGO_PKG_VERSION").to_string()),
+        Expression::make_string(env!("CARGO_PKG_VERSION")),
     );
     vars.set_internal("PI", Expression::Float(f32::consts::PI));
     vars.set_internal("E", Expression::Float(f32::consts::E));

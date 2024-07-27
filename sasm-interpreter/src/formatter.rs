@@ -17,7 +17,7 @@ pub fn format(fmt: &str, vars: &VariableStorage) -> Result<String, RuntimeError>
         let var_value = vars.get_nonnull(&ident)?;
         let repr = match var_value {
             Expression::Number(n) => n.to_string(),
-            Expression::String(string) => string.clone(),
+            Expression::String(string) => String::clone(string),
             Expression::Float(val) => val.to_string(),
             Expression::Identifier(..) => unreachable!(),
         };

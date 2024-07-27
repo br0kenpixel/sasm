@@ -108,8 +108,8 @@ mod tests {
         assert_eq!(
             parsed,
             vec![
-                Expression::String("first string".into()),
-                Expression::String("second string".into()),
+                Expression::make_string("first string"),
+                Expression::make_string("second string"),
             ]
         );
     }
@@ -118,14 +118,14 @@ mod tests {
     fn parse_string() {
         let parsed = ArgParserStateMachine::parse_args("'hello there!'").unwrap();
 
-        assert_eq!(parsed, vec![Expression::String("hello there!".into())]);
+        assert_eq!(parsed, vec![Expression::make_string("hello there!")]);
     }
 
     #[test]
     fn parse_double_qt_string() {
         let parsed = ArgParserStateMachine::parse_args("\"hello there!\"").unwrap();
 
-        assert_eq!(parsed, vec![Expression::String("hello there!".into())]);
+        assert_eq!(parsed, vec![Expression::make_string("hello there!")]);
     }
 
     #[test]
@@ -134,7 +134,7 @@ mod tests {
 
         assert_eq!(
             parsed,
-            vec![Expression::Number(3), Expression::String("hello".into())]
+            vec![Expression::Number(3), Expression::make_string("hello")]
         );
     }
 
@@ -201,7 +201,7 @@ mod tests {
             vec![
                 Expression::Identifier(Identifier::new("pi")),
                 Expression::Number(-3),
-                Expression::String("hello!".into())
+                Expression::make_string("hello!")
             ]
         );
     }

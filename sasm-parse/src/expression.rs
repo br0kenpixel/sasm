@@ -3,6 +3,7 @@ use std::{
     any::Any,
     fmt::{self, Display},
     mem,
+    rc::Rc,
 };
 
 pub type Number = i64;
@@ -15,7 +16,7 @@ pub enum Expression {
     /// A 64-bit signed integer [`i64`].
     Number(Number),
     /// A dynamically-allocated string of characters.
-    String(Text),
+    String(Rc<Text>),
     /// A 32-bit floating point number [`f32`].
     Float(Float),
     /// An identifier
@@ -40,6 +41,10 @@ impl Expression {
     pub const FLOAT_TYPE_NAME: &'static str = "Number";
     pub const STRING_TYPE_NAME: &'static str = "String";
     pub const IDENT_TYPE_NAME: &'static str = "Identifier";
+
+    pub fn make_string<S: AsRef<str>>(obj: S) -> Self {
+        Self::String(Rc::new(obj.as_ref().to_string()))
+    }
 
     #[must_use]
     pub fn into_ident(self) -> Option<Identifier> {
@@ -67,7 +72,7 @@ impl Expression {
 
     #[must_use]
     pub fn singe_char_string(ch: char) -> Self {
-        Self::String(ch.into())
+        Self::String(Rc::new(ch.into()))
     }
 
     #[must_use]
@@ -96,7 +101,8 @@ impl TryFrom<&str> for Expression {
         if (value.starts_with('\'') && value.ends_with('\''))
             || (value.starts_with('\"') && value.ends_with('\"'))
         {
-            return Ok(Self::String(value[1..value.len() - 1].into()));
+            let string_content = &value[1..value.len() - 1];
+            return Ok(Self::make_string(string_content));
         }
 
         if let Ok(ident) = Identifier::try_from(value) {
