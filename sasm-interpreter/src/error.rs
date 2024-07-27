@@ -8,6 +8,8 @@ pub enum RuntimeError {
     IllegalGoto(usize),
     #[error("Variable '{0}' is internal and read-only")]
     IllegalWriteInternal(Identifier),
+    #[error("Can't create variable named '{0}', which conflicts with internal variable naming")]
+    IllegalCreateInternal(Identifier),
     #[error("Undefined variable '{0}'")]
     UndefinedVar(Identifier),
     #[error("Variable '{}' has already been defined", (.0).name())]

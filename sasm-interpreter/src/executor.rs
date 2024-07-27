@@ -25,6 +25,9 @@ pub fn execute(
 ) -> Result<ExecutorState, RuntimeError> {
     match instr {
         Instruction::CreateVariable(ident) => {
+            if ident.is_internal() {
+                return Err(RuntimeError::IllegalCreateInternal(ident.clone()));
+            }
             vars.create(ident)?;
         }
         Instruction::Move(dst, src) => {
