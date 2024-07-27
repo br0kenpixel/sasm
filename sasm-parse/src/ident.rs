@@ -1,14 +1,14 @@
 use crate::error::ParseError;
-use std::fmt::Display;
+use std::{fmt::Display, rc::Rc};
 
 /// An identifier (variable name).
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Identifier(String);
+pub struct Identifier(Rc<String>);
 
 impl Identifier {
     #[cfg(test)]
     pub(crate) fn new<S: AsRef<str>>(name: S) -> Self {
-        Self(name.as_ref().into())
+        Self(Rc::new(name.as_ref().into()))
     }
 
     /// Returns the identifier name as a string slice.
@@ -33,7 +33,7 @@ impl TryFrom<&str> for Identifier {
             return Err(Self::Error::IllegalIdentifier(value.into()));
         }
 
-        Ok(Self(value.into()))
+        Ok(Self(Rc::new(value.into())))
     }
 }
 
