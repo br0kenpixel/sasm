@@ -62,9 +62,10 @@ impl VariableStorage {
     pub fn set_internal(&mut self, name: &'static str, value: Expression) {
         let ident = Identifier::try_from(format!("_{name}").as_str()).unwrap();
 
-        if value.type_name() == Expression::IDENT_TYPE_NAME {
-            panic!("internal variable cannot be of type `Identifier`");
-        }
+        assert!(
+            value.type_name() != Expression::IDENT_TYPE_NAME,
+            "internal variable cannot be of type `Identifier`"
+        );
 
         self.insert(&ident, value);
     }

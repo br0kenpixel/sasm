@@ -17,6 +17,7 @@ impl Identifier {
         &self.0
     }
 
+    #[must_use]
     pub fn is_internal(&self) -> bool {
         self.0.starts_with('_')
     }
