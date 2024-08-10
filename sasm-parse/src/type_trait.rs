@@ -1,5 +1,5 @@
 use crate::{
-    expression::{Expression, Number, Text},
+    expression::{Expression, Float, Number, Text},
     ident::Identifier,
 };
 
@@ -23,5 +23,11 @@ impl SasmType for Text {
 impl SasmType for Identifier {
     fn type_name() -> &'static str {
         Expression::IDENT_TYPE_NAME
+    }
+}
+
+impl SasmType for Float {
+    fn type_name() -> &'static str {
+        Expression::FLOAT_TYPE_NAME
     }
 }
