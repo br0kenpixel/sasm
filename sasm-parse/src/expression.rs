@@ -6,8 +6,11 @@ use std::{
     rc::Rc,
 };
 
+/// A 64-bit signed integer [`i64`].
 pub type Number = i64;
+/// A dynamically-allocated string of characters that can be cheaply cloned.
 pub type Text = Rc<String>;
+/// A 32-bit floating point number [`f32`].
 pub type Float = f32;
 
 /// An expression.
