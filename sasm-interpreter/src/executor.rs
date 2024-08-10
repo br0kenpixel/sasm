@@ -156,13 +156,13 @@ pub fn execute(
             match expr {
                 Expression::Identifier(..) => unreachable!("CLR cannot be used with identifiers"),
                 Expression::Number(..) => {
-                    vars.set(what, Expression::Number(Number::default()))?;
+                    vars.set(what, Expression::zero())?;
                 }
                 Expression::String(..) => {
-                    vars.set(what, Expression::make_string(String::default()))?;
+                    vars.set(what, Expression::empty_string())?;
                 }
                 Expression::Float(..) => {
-                    vars.set(what, Expression::Float(0.))?;
+                    vars.set(what, Expression::zero_float())?;
                 }
             }
         }
