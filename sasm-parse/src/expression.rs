@@ -49,14 +49,17 @@ impl Expression {
         Self::String(Rc::new(obj.as_ref().to_string()))
     }
 
+    #[must_use]
     pub fn empty_string() -> Self {
         Self::String(Rc::new(String::new()))
     }
 
+    #[must_use]
     pub const fn zero() -> Self {
         Self::Number(0)
     }
 
+    #[must_use]
     pub const fn zero_float() -> Self {
         Self::Float(0.0)
     }
