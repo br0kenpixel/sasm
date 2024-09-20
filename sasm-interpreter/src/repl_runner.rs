@@ -23,7 +23,9 @@ pub fn start() {
         }
 
         match Instruction::try_from(line.as_str()) {
-            Ok(Instruction::JumpNotEqual(..)) => {
+            Ok(Instruction::JumpNotEqual(..))
+            | Ok(Instruction::JumpEqual(..))
+            | Ok(Instruction::Jump(..)) => {
                 eprintln!("Jumps are not supported in REPL mode");
             }
             Ok(instr) => match execute(&instr, &mut variables, &mut cmp_result) {
