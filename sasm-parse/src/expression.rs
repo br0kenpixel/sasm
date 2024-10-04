@@ -45,20 +45,32 @@ impl Expression {
     pub const STRING_TYPE_NAME: &'static str = "String";
     pub const IDENT_TYPE_NAME: &'static str = "Identifier";
 
+    /// Creates a string expression from a string.
+    ///
+    /// ```rust
+    /// # use sasm_parse::expression::Expression;
+    /// let string_a = Expression::make_string("hello");
+    /// let string_b = Expression::make_string(String::from("hello"));
+    ///
+    /// assert_eq!(string_a, string_b);
+    /// ```
     pub fn make_string<S: AsRef<str>>(obj: S) -> Self {
         Self::String(Rc::new(obj.as_ref().to_string()))
     }
 
+    /// Creates a string expression containing an empty string.
     #[must_use]
     pub fn empty_string() -> Self {
         Self::String(Rc::new(String::new()))
     }
 
+    /// Creates a string expression containing the integer `0`.
     #[must_use]
     pub const fn zero() -> Self {
         Self::Number(0)
     }
 
+    /// Creates a string expression containing the float `0.0`.
     #[must_use]
     pub const fn zero_float() -> Self {
         Self::Float(0.0)
@@ -78,11 +90,13 @@ impl Expression {
         None
     }
 
+    /// Compares the types of two expressions.
     #[must_use]
     pub fn cmp_type(&self, rhs: &Self) -> bool {
         mem::discriminant(self) == mem::discriminant(rhs)
     }
 
+    /// Returns the type name of the object contained in the expression.
     #[must_use]
     pub const fn type_name(&self) -> &'static str {
         match self {
@@ -93,6 +107,7 @@ impl Expression {
         }
     }
 
+    /// Creates an expression containing a string with only one character.
     #[must_use]
     pub fn singe_char_string(ch: char) -> Self {
         Self::String(Rc::new(ch.into()))
